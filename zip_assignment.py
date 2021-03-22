@@ -3,7 +3,7 @@ This file is to check if the folder that the student is trying to submit
 is of this exact structure (with exact naming):
 | index.html
 | data
-    | *.csv
+    | *
 | <all the other stuff that you included with no name requirements>
 
 And then it will zip
@@ -27,10 +27,10 @@ try:
 except ImportError:
     from urllib2 import urlopen
 
-
 # Logistical pieces
 
 warnings.filterwarnings("ignore")
+
 
 ########################################## HELPER FUNCTIONS ##########################################
 
@@ -60,7 +60,7 @@ def get_all_file_paths(directory, ext):
 
 # Function adapted from https://www.geeksforgeeks.org/python-url-shortener-using-tinyurl-api/
 def make_tiny(url):
-    request_url = ('http://tinyurl.com/api-create.php?' + urlencode({'url':url}))
+    request_url = ('http://tinyurl.com/api-create.php?' + urlencode({'url': url}))
     with contextlib.closing(urlopen(request_url)) as response:
         return response.read().decode('utf-8')
 
@@ -80,13 +80,12 @@ def main():
             print("directory that contains zip_assignment.py and execute this script again.")
             sys.exit()
 
-
     # Alright. Get the name of the repository that they are using
     PATH_TO_SUBMISSIONLINK = "link_to_submission.txt"
     if not os.path.exists(PATH_TO_SUBMISSIONLINK):
         repo_name = curdir.split(os.sep)[-1]
         repo_name_splitted = repo_name.split("-")
-        if repo_name_splitted[0] != "hw6" or repo_name_splitted[1] != "dataviz":# or len(repo_name_splitted) < 3:
+        if repo_name_splitted[0] != "hw6" or repo_name_splitted[1] != "dataviz":  # or len(repo_name_splitted) < 3:
             # We don't have the correct github username to generate the link to, so we'll fail
             print("The name of the current folder does not match up with the syntax of a \
                     valid github repository.")
@@ -94,7 +93,7 @@ def main():
                     on Github. E.g. 'hw6-dataviz-ndo3'")
             sys.exit()
         # else, we will now create a tinyurl to the github pages of this submission
-        correct_path = "https://cs1951a-s21-brown.github.io/{}/index.html".format(repo_name)
+        correct_path = "https://cs1951a-s21-brown.github.io/{}/".format(repo_name)
         # this link will not really be available until you make public your Github Page
         tinyurl = make_tiny(correct_path)
         # also do a binary encoding of your repo name, just in case we cannot get ahold of
@@ -103,10 +102,10 @@ def main():
         # and then output it to PATH_TO_SUBMISSIONLINK
         with open(PATH_TO_SUBMISSIONLINK, "w") as lolfile:
             lolfile.writelines([tinyurl + "\n\n", binary_enc + "\n"])
-    
+
     # alright. Now before we do anything, we'll commit and push
     print(" Committing your code to Github for Github Pages ... ")
-    sequence = [ ['git', 'add', '.'] , ['git', 'commit', '-m', '.'] , ['git', 'push']]
+    sequence = [['git', 'add', '.'], ['git', 'commit', '-m', '.'], ['git', 'push']]
     try:
         for sq in sequence:
             ret = subprocess.call(sq)
@@ -117,34 +116,21 @@ def main():
         print("Error calling git commands to push your code", "ERROR: ", e)
         print("You will need to push your code to Github manually to be graded.")
 
-
-    
     # Alright. Now right before submission, we will assert that the PATH_TO_SUBMISSIONLINK
     # exists now
     if not os.path.exists(PATH_TO_SUBMISSIONLINK):
         print("Ruh roh. Something went wrong with zip_assignment.py. Please contact the HTAs.")
 
-
-    print("Writting into zip file...")
+    print("Writing into zip file...")
     zip_path = "dataviz-submission-1951A.zip"
     with zipfile.ZipFile(zip_path, "w") as zip:
-        for root, dirs, files in os.walk(os.getcwd()):
-            # skipping the hidden files
-            for e in root.split("/")[1:]:
-                if e[0] == ".": break
+        for dirname, _, files in os.walk(os.getcwd()):
+            if '{}.'.format(os.sep) not in dirname:
                 for f in files:
-                    if f != zip_path and f != "zip_assignment.py" and not(".zip" in f):
-                        zip.write(os.path.join(root, f),\
-                                    os.path.relpath(os.path.join(root, f),\
-                                        os.path.join(zip_path, '..'))\
-                                    )
-
+                    if f != zip_path and f != "zip_assignment.py" and not (".zip" in f):
+                        zip.write(os.path.relpath(os.path.join(dirname, f), os.path.join(zip_path, '..')))
 
     print("Done! Wrote the submission zip to {}".format(zip_path))
-
-
-
-
 
 
 if __name__ == "__main__":
