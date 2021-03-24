@@ -86,7 +86,7 @@ render_graph2 = async (ordering) => {
         .style("text-anchor", "start")
         .text(({ average_runtime }) => average_runtime);
 
-    title.text(`Top 50 Average Runtime Per Release Year (Descending by ${key_to_label[ordering]})`);
+    title.text(`Top 50 Average Movie Runtime Per Release Year (Descending by ${key_to_label[ordering]})`);
 
     bars.exit().remove();
     counts.exit().remove();

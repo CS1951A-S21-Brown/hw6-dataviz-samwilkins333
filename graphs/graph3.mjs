@@ -28,7 +28,7 @@ svg.append("text")
     .attr("transform", `translate(${(width - margin.left - margin.right) / 2}, ${height - margin.top - margin.bottom + 1.5 * padding})`)
     .attr("font-size", "12px")
     .style("text-anchor", "middle")
-    .text("Count");
+    .text("Number of Shared Movies");
 
 svg.append("text")
     .attr("transform", `translate(${-5 * margin.left / 6}, ${(height - margin.top - margin.bottom) / 2}), rotate(-90)`)

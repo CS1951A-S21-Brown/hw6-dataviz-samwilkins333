@@ -30,7 +30,7 @@ svg.append("text")
     .attr("font-size", "12px")
     .attr("text-align", "center")
     .style("text-anchor", "middle")
-    .text("Count");
+    .text("Number of Titles");
 
 let y_axis_text = svg.append("text")
     .attr("transform", `translate(${-5 * margin.left / 6}, ${(height - margin.top - margin.bottom) / 2}), rotate(-90)`)
