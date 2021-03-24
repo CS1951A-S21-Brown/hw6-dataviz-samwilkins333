@@ -1,7 +1,7 @@
 let cleaned_data = undefined
 
 const width = (MAX_WIDTH / 2),
-      height = MAX_HEIGHT - 44,
+      height = MAX_HEIGHT - BUTTON_HEIGHT,
       duration = 500
 
 const padding = 10;
@@ -17,7 +17,10 @@ const svg = d3.select("#graph3")
     .append("g")
     .attr("transform", `translate(${margin_left}, ${margin.top})`);
 
-const key_to_label = { average_runtime: "Average Runtime", release_year: "Release Year" }
+const key_to_labels = {
+    average_runtime: { prefix: "Top", label: "Average Runtime" },
+    release_year: { prefix: "Recent", label: "Release Year" }
+}
 
 let x = d3.scaleLinear()
     .range([0, width - margin_left - margin.right]);
@@ -34,12 +37,14 @@ x_axis_label.attr("transform", `translate(0, ${height - 100})`)
 
 const tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
+    .style("left", 0)
+    .style("top", 0)
     .style("opacity", 0);
 
 const horizontal_connector = svg.append("path")
     .attr("class", "connector")
     .attr("fill", "none")
-    .attr("stroke", "steelblue")
+    .attr("stroke", "black")
     .attr("stroke-width", 1)
     .attr("stroke-dasharray", "5,5")
     .style("opacity", 0);
@@ -47,13 +52,13 @@ const horizontal_connector = svg.append("path")
 const vertical_connector = svg.append("path")
     .attr("class", "connector")
     .attr("fill", "none")
-    .attr("stroke", "steelblue")
+    .attr("stroke", "black")
     .attr("stroke-width", 1)
     .attr("stroke-dasharray", "5,5")
     .style("opacity", 0);
 
 svg.append("text")
-    .attr("transform", `translate(${(width - margin_left - margin.right) / 2}, ${height - margin.top - margin_bottom + 1.5 * padding + 20})`)
+    .attr("transform", `translate(${(width - margin_left - margin.right) / 2}, ${height - margin.top - margin_bottom + 4 * padding})`)
     .attr("font-size", "12px")
     .style("text-anchor", "middle")
     .text("Average Runtime (Minutes)");
@@ -70,83 +75,100 @@ let title = svg.append("text")
     .style("font-size", 15);
 
 render_graph2 = async (ordering) => {
+    svg.selectAll("circle").remove()
+    svg.selectAll("path.area").remove()
+    svg.selectAll("path.line").remove()
+
+    const cap = 50
+
     let data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv("../data/netflix.csv")))
     data = data
         .sort((a, b) => b[ordering] - a[ordering])
-        .slice(0, 50)
+        .slice(0, cap)
 
     const min = d3.min(data, ({ average_runtime }) => average_runtime)
     const max = d3.max(data, ({ average_runtime }) => average_runtime)
     x.domain([min, max]);
     y.domain(data.map(({ release_year }) => release_year));
+    const y_offset = y.bandwidth() / 2
 
     x_axis_label.call(d3.axisBottom(x))
-    y_axis_label.call(d3.axisLeft(y).tickSize(0).tickPadding(10));
 
-    const y_offset = y.bandwidth() / 2
+    const _show = ({ release_year, average_runtime }) => {
+        const this_y = y(release_year) + y_offset
+        const this_x = x(average_runtime)
+        show({ release_year, average_runtime, this_y, this_x })
+    }
+
+    y_axis_label.call(d3.axisLeft(y).tickSize(0).tickPadding(10));
+    y_axis_label.selectAll("text")
+        .style("cursor", "pointer")
+        .on("mouseover", release_year => {
+            const { average_runtime } = data.find(d => d.release_year === release_year)
+            _show({ release_year, average_runtime })
+        })
+        .on("mouseout", hide)
 
     svg.append("path")
         .datum(data)
         .attr("fill", "steelblue")
         .attr("fill-opacity", .3)
         .attr("stroke", "none")
-        .transition()
-        .duration(duration)
+        .attr("class", "area")
         .attr("d", d3.area()
             .x0(0)
             .x1(({ average_runtime }) => x(average_runtime))
             .y(({ release_year }) => y(release_year) + y_offset)
         )
 
-    const circles = svg.selectAll("myCircles")
+    svg.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 2)
+        .attr("class", "line")
+        .attr("d", d3.line()
+            .x(({ average_runtime }) => x(average_runtime))
+            .y(({ release_year }) => y(release_year) + y_offset)
+        )
+
+    svg.selectAll("circle")
         .data(data)
         .enter()
         .append("circle")
         .attr("fill", "steelblue")
         .attr("stroke", "none")
         .attr("title", ({ average_runtime }) => average_runtime)
-        .attr("cx", function(d) { return x(d.average_runtime) })
-        .attr("cy", function(d) { return y(d.release_year) + y_offset })
+        .attr("cx", ({ average_runtime }) => x(average_runtime))
+        .attr("cy", ({ release_year }) => y(release_year) + y_offset)
         .attr("r", 4)
         .style("cursor", "pointer")
-        .on("mouseover", ({ average_runtime, release_year }) => {
-            const this_y = y(release_year) + y_offset
-            const this_x = x(average_runtime)
+        .on("mouseover", _show)
+        .on("mouseout", hide)
 
-            horizontal_connector.transition().duration(duration).style("opacity", .9);
-            horizontal_connector.attr("d", `M 0 ${this_y} H ${this_x}`)
+    const { prefix, label } = key_to_labels[ordering]
+    title.text(`${prefix} ${cap} Average Movie Runtime By Release Year (Descending by ${label})`);
+}
 
-            vertical_connector.transition().duration(duration).style("opacity", .9);
-            vertical_connector.attr("d", `M ${this_x} ${this_y} v ${height - margin_bottom - this_y - 40}`)
+function show({ release_year, average_runtime, this_y, this_x }) {
+    horizontal_connector.transition().duration(duration).style("opacity", .9);
+    horizontal_connector.attr("d", `M 0 ${this_y} H ${this_x}`)
 
-            tooltip.transition()
-                .duration(duration)
-                .style("opacity", .9);
-            tooltip.html(`${average_runtime} minutes in ${release_year}`)
-                .style("left", (d3.event.pageX) + "px")
-                .style("top", (d3.event.pageY - 28) + "px");
-            })
-        .on("mouseout", () => {
-            tooltip.transition().duration(duration).style("opacity", 0)
-            horizontal_connector.transition().duration(duration).style("opacity", 0)
-            vertical_connector.transition().duration(duration).style("opacity", 0)
-        })
+    vertical_connector.transition().duration(duration).style("opacity", .9);
+    vertical_connector.attr("d", `M ${this_x} ${this_y} v ${height - margin_bottom - this_y - 40}`)
 
-    circles.transition().duration(duration)
-
-    svg.append("path")
-        .datum(data)
-        .attr("fill", "none")
-        .attr("stroke", "steelblue")
-        .attr("stroke-width", 2)
-        .transition()
+    tooltip.transition()
         .duration(duration)
-        .attr("d", d3.line()
-            .x(function(d) { return x(d.average_runtime) })
-            .y(function(d) { return y(d.release_year) + y_offset })
-        )
+        .style("opacity", .9);
+    tooltip.html(`${average_runtime} minutes in ${release_year}`)
+        .style("left", `${d3.event.pageX + 7}px`)
+        .style("top", `${d3.event.pageY - 28}px`);
+}
 
-    title.text(`Top 50 Average Movie Runtime Per Release Year (Descending by ${key_to_label[ordering]})`);
+function hide() {
+    tooltip.transition().duration(duration).style("opacity", 0)
+    horizontal_connector.transition().duration(duration).style("opacity", 0)
+    vertical_connector.transition().duration(duration).style("opacity", 0)
 }
 
 function clean_data(data) {
@@ -170,7 +192,7 @@ function clean_data(data) {
         const average_runtime = runtimes.reduce((acc, next) => acc + next, 0) / runtimes.length
         return {
             release_year,
-            average_runtime: Math.round(average_runtime)
+            average_runtime: +average_runtime.toFixed(2)
         }
     })
 }

@@ -36,7 +36,7 @@ div.tooltip {
     padding: 5px;
     font: 12px sans-serif;
     background: white;
-    border: 1px solid steelblue;
+    border: 1px solid black;
     border-radius: 5px;
     pointer-events: none;
 }

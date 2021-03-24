@@ -1,7 +1,7 @@
 let cleaned_data = undefined
 
 const width = MAX_WIDTH / 2,
-      height = MAX_HEIGHT / 2 - 44,
+      height = MAX_HEIGHT / 2 - BUTTON_HEIGHT,
       duration = 500
 
 const label_offset = 2,
@@ -26,7 +26,7 @@ let countRef = svg.append("g");
 let y_axis_label = svg.append("g");
 
 svg.append("text")
-    .attr("transform", `translate(${(width - margin.left - margin.right) / 2}, ${height - margin.top - margin.bottom + 1.5 * padding})`)
+    .attr("transform", `translate(${(width - margin.left - margin.right) / 2}, ${height - margin.top - margin.bottom + 2 * padding})`)
     .attr("font-size", "12px")
     .attr("text-align", "center")
     .style("text-anchor", "middle")

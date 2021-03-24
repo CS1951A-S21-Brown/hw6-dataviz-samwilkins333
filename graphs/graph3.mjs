@@ -25,7 +25,7 @@ let countRef = svg.append("g");
 let y_axis_label = svg.append("g");
 
 svg.append("text")
-    .attr("transform", `translate(${(width - margin.left - margin.right) / 2}, ${height - margin.top - margin.bottom + 1.5 * padding})`)
+    .attr("transform", `translate(${(width - margin.left - margin.right) / 2}, ${height - margin.top - margin.bottom + 2 * padding})`)
     .attr("font-size", "12px")
     .style("text-anchor", "middle")
     .text("Number of Shared Movies");
@@ -34,7 +34,7 @@ svg.append("text")
     .attr("transform", `translate(${-5 * margin.left / 6}, ${(height - margin.top - margin.bottom) / 2}), rotate(-90)`)
     .attr("font-size", "12px")
     .style("text-anchor", "middle")
-    .text(`Director, Actor Pairs`);
+    .text(`(Director, Actor) Pairs`);
 
 
 let title = svg.append("text")
@@ -43,10 +43,12 @@ let title = svg.append("text")
     .style("font-size", 15);
 
 render_graph3 = async () => {
+    const cap = 20
+
     let data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv("../data/netflix.csv")))
     data = data
         .sort((a, b) => b.count - a.count)
-        .slice(0, 20)
+        .slice(0, cap)
 
     x.domain([0, d3.max(data, ({ count }) => count)]);
     y.domain(data.map(({ pair }) => pair));
@@ -55,16 +57,17 @@ render_graph3 = async () => {
 
     let bars = svg.selectAll("rect").data(data);
 
+    const buckets = new Set(data.map(({ count }) => count)).size
     let color = d3.scaleOrdinal()
-        .domain(data.map(({ pair }) => pair))
-        .range(d3.quantize(d3.interpolateHcl("#ffcc33", "#66a0e2"), data.length));
+        .domain(data.map(({ count }) => count))
+        .range(d3.quantize(d3.interpolateHcl("#ccc", "#eee"), buckets));
 
     bars.enter()
         .append("rect")
         .merge(bars)
         .transition()
         .duration(duration)
-        .attr("fill", ({ pair }) => color(pair))
+        .attr("fill", ({ count }) => color(count))
         .attr("x", x(0))
         .attr("y", ({ pair }) => y(pair))
         .attr("width", ({ count }) => x(count))
@@ -83,7 +86,7 @@ render_graph3 = async () => {
         .style("text-anchor", "start")
         .text(({ count }) => count);
 
-    title.text(`Top 20 Most Frequent Movie Director, Actor Pairs`);
+    title.text(`Top ${cap} Most Frequent Movie (Director, Actor) Pairs`);
 
     bars.exit().remove();
     counts.exit().remove();
