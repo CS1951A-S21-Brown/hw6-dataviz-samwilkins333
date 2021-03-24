@@ -12,31 +12,34 @@ const padding = 10;
 const margin_left = 80
 const margin_bottom = 60
 const margin_right = 175
+const margin_top = 60
+
+const suffixes = ["th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"]
 
 const svg = d3.select("#graph3")
     .append("svg")
     .attr("width", width)
     .attr("height", height)
     .append("g")
-    .attr("transform", `translate(${margin_left}, ${margin.top})`);
+    .attr("transform", `translate(${margin_left}, ${margin_top})`);
 
-const key_to_title = {
-    average_runtime: { prefix: "Top", label: "Average Runtime" },
-    release_year: (low, high, count) => `${count} Average Movie Runtimes By Release Year (${low} - ${high}, ${high - low + 1} years)`
+const ordering_to_clipper = {
+    release_year: clip_data_release_year,
+    average_runtime: clip_data_average_runtime
 }
 
 const x = d3.scaleLinear()
     .range([0, width - margin_left - margin_right]);
 
 const y = d3.scaleBand()
-    .range([0, height - margin.top - margin_bottom])
+    .range([0, height - margin_top - margin_bottom])
     .padding(0.1);
 
 const countRef = svg.append("g");
 const y_axis_label = svg.append("g");
 const x_axis_label = svg.append("g");
 
-x_axis_label.attr("transform", `translate(0, ${height - 100})`)
+x_axis_label.attr("transform", `translate(0, ${height - 120})`)
 
 const tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
@@ -61,65 +64,44 @@ const vertical_connector = svg.append("path")
     .style("opacity", 0);
 
 svg.append("text")
-    .attr("transform", `translate(${(width - margin_left - margin_right) / 2}, ${height - margin.top - margin_bottom + 4 * padding})`)
+    .attr("transform", `translate(${(width - margin_left - margin_right) / 2}, ${height - margin_top - margin_bottom + 4 * padding})`)
     .attr("font-size", "12px")
     .style("text-anchor", "middle")
     .text("Average Runtime (Minutes)");
 
 svg.append("text")
-    .attr("transform", `translate(${-2 * margin_left / 3}, ${(height - margin.top - margin_bottom) / 2}), rotate(-90)`)
+    .attr("transform", `translate(${-2 * margin_left / 3}, ${(height - margin_top - margin_bottom) / 2}), rotate(-90)`)
     .attr("font-size", "12px")
     .style("text-anchor", "middle")
     .text(`Release Years`);
 
 const title = svg.append("text")
-    .attr("transform", `translate(0, -14)`)
+    .attr("transform", `translate(0, -32)`)
     .attr("font-weight", "bold")
     .style("font-size", 15);
+
+const subtitle = svg.append("text")
+    .attr("transform", `translate(0, -14)`)
+    .style("font-size", 12);
 
 render_graph2 = async args => {
     svg.selectAll("circle").remove()
     svg.selectAll("path.area").remove()
     svg.selectAll("path.line").remove()
 
-    let data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv("../data/netflix.csv")))
+    const full_data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv("../data/netflix.csv")))
 
-    let min = d3.min(data, ({ release_year }) => release_year)
-    let max = d3.max(data, ({ release_year }) => release_year)
+    if (args.init) {
+        range = undefined
+    }
 
-    ordering = ordering || args.ordering
-    const [low, high] = range = (args.range || range || [max - (cap - 1), max])
-
-    args.init && render_slider({ min, max, limit: cap - 1 })
-
-    min = d3.min(data, ({ average_runtime }) => average_runtime)
-    max = d3.max(data, ({ average_runtime }) => average_runtime)
-
+    let min = d3.min(full_data, ({ average_runtime }) => average_runtime)
+    let max = d3.max(full_data, ({ average_runtime }) => average_runtime)
     x.domain([min, max]);
 
-    data = data.sort((a, b) => b[ordering] - a[ordering] || b.release_year - a.release_year)
+    const ranked_data = [...full_data].sort((a, b) => b.average_runtime - a.average_runtime)
 
-    let low_index = 0
-    for (let i = 0; i < data.length; i++) {
-        if (data[i].release_year <= high) {
-            low_index = i
-            break
-        }
-    }
-
-    let high_index = 50
-    for (let i = low_index; i < data.length; i++) {
-        const { release_year } = data[i]
-        if (release_year === low) {
-            high_index = i + 1
-            break
-        } else if (release_year < low) {
-            high_index = i
-            break
-        }
-    }
-
-    data = data.slice(low_index, high_index)
+    const { data, title_text, subtitle_text } = ordering_to_clipper[ordering = args.ordering || ordering](args, full_data)
 
     y.domain(data.map(({ release_year }) => release_year));
 
@@ -130,7 +112,8 @@ render_graph2 = async args => {
     const _show = ({ release_year, average_runtime }) => {
         const this_y = y(release_year) + y_offset
         const this_x = x(average_runtime)
-        show({ release_year, average_runtime, this_y, this_x })
+        const ranking = ranked_data.findIndex(d => d.average_runtime === average_runtime) + 1
+        show({ release_year, average_runtime, this_y, this_x, ranking })
     }
 
     y_axis_label.call(d3.axisLeft(y).tickSize(0).tickPadding(10));
@@ -179,10 +162,67 @@ render_graph2 = async args => {
         .on("mouseover", _show)
         .on("mouseout", hide)
 
-    title.text(key_to_title[ordering](low, high, data.length));
+    title.text(title_text)
+    subtitle.text(subtitle_text)
 }
 
-function show({ release_year, average_runtime, this_y, this_x }) {
+function clip_data_release_year(args, full_data) {
+    const min = d3.min(full_data, ({ release_year }) => release_year)
+    const max = d3.max(full_data, ({ release_year }) => release_year)
+
+    const [low, high] = range = (args.range || range || [max - (cap - 1), max])
+
+    args.init && render_slider({ min, max, limit: cap - 1, ordering })
+
+    let data = full_data.sort((a, b) => b.release_year - a.release_year)
+
+    let low_index = 0
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].release_year <= high) {
+            low_index = i
+            break
+        }
+    }
+
+    let high_index = 50
+    for (let i = low_index; i < data.length; i++) {
+        const { release_year } = data[i]
+        if (release_year === low) {
+            high_index = i + 1
+            break
+        } else if (release_year < low) {
+            high_index = i
+            break
+        }
+    }
+
+    data = data.slice(low_index, high_index)
+
+    return {
+        data,
+        title_text: `${full_data.length} Sequential Release Years' Average Movie Runtimes`,
+        subtitle_text: `(${low} - ${high}) ${high - low + 1} years, ${data.length} samples`
+    }
+}
+
+function clip_data_average_runtime(args, full_data) {
+    const min = 1
+    const max = full_data.length
+
+    const [low, high] = range = (args.range || range || [min, cap])
+
+    args.init && render_slider({ min, max, limit: cap - 1, ordering })
+
+    const data = full_data.sort((a, b) => b.average_runtime - a.average_runtime).slice(low - 1, high)
+
+    return {
+        data,
+        title_text: `${full_data.length} Release Years Ranked By Average Movie Runtime`,
+        subtitle_text: `(${low} - ${high}) ${data.length} samples`
+    }
+}
+
+function show({ release_year, average_runtime, this_y, this_x, ranking }) {
     horizontal_connector.transition().duration(duration).style("opacity", .9);
     horizontal_connector.attr("d", `M 0 ${this_y} H ${this_x}`)
 
@@ -192,7 +232,8 @@ function show({ release_year, average_runtime, this_y, this_x }) {
     tooltip.transition()
         .duration(duration)
         .style("opacity", .9);
-    tooltip.html(`${average_runtime} minutes in ${release_year}`)
+    const suffix = ranking < 11 || ranking > 19 ? suffixes[ranking % 10] : "th"
+    tooltip.html(`${average_runtime} minutes in ${release_year} [${ranking}${suffix}]`)
         .style("left", `${d3.event.pageX + 7}px`)
         .style("top", `${d3.event.pageY - 28}px`);
 }
@@ -231,17 +272,18 @@ function clean_data(data) {
 
 const slider = document.getElementById('slider');
 
-function render_slider({ min, max, limit }) {
+function render_slider({ min, max, limit, ordering }) {
+    slider.noUiSlider?.destroy()
 
-    slider.style.height = `${height - margin_bottom - margin.top - 22}px`
+    slider.style.height = `${height - margin_bottom - margin_top - 22}px`
 
     noUiSlider.create(slider, {
         range: { min, max },
-        start: [max - limit, max],
+        start: ordering === "release_year" ? [max - limit, max] : [min, limit + 1],
         margin: 9,
         limit,
         connect: true,
-        direction: 'rtl',
+        direction: ordering === "release_year" ? "rtl" : "ltr",
         orientation: 'vertical',
         behaviour: 'tap-drag',
         tooltips: true,

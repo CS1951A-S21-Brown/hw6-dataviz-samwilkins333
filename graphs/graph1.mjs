@@ -79,8 +79,8 @@ render_graph1 = async (category) => {
         .style("text-anchor", "start")
         .text(({ count }) => count);
 
-    y_axis_text.text(`${category}s`)
-    title.text(`Number of Titles Per Genre (${category}s)`);
+    y_axis_text.text(`${category} Genres`)
+    title.text(`Number of ${category}s Per Genre`);
 
     bars.exit().remove();
     counts.exit().remove();
