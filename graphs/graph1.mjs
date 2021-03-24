@@ -11,19 +11,18 @@ const svg = d3.select("#graph1")
     .append("svg")
     .attr("width", width)
     .attr("height", height)
-    .attr("style", "border-bottom: 1px dashed black;")
     .append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-let x = d3.scaleLinear()
+const x = d3.scaleLinear()
     .range([0, width - margin.left - margin.right]);
 
-let y = d3.scaleBand()
+const y = d3.scaleBand()
     .range([0, height - margin.top - margin.bottom])
     .padding(0.1);
 
-let countRef = svg.append("g");
-let y_axis_label = svg.append("g");
+const countRef = svg.append("g");
+const y_axis_label = svg.append("g");
 
 svg.append("text")
     .attr("transform", `translate(${(width - margin.left - margin.right) / 2}, ${height - margin.top - margin.bottom + 2 * padding})`)
@@ -32,12 +31,12 @@ svg.append("text")
     .style("text-anchor", "middle")
     .text("Number of Titles");
 
-let y_axis_text = svg.append("text")
+const y_axis_text = svg.append("text")
     .attr("transform", `translate(${-5 * margin.left / 6}, ${(height - margin.top - margin.bottom) / 2}), rotate(-90)`)
     .attr("font-size", "12px")
     .style("text-anchor", "middle");
 
-let title = svg.append("text")
+const title = svg.append("text")
     .attr("transform", `translate(0, -14)`)
     .style("font-weight", "bold")
     .style("font-size", 15);
@@ -50,9 +49,9 @@ render_graph1 = async (category) => {
 
     y_axis_label.call(d3.axisLeft(y).tickSize(0).tickPadding(10));
 
-    let bars = svg.selectAll("rect").data(data);
+    const bars = svg.selectAll("rect").data(data);
 
-    let color = d3.scaleOrdinal()
+    const color = d3.scaleOrdinal()
         .domain(data.map(({ genre }) => genre))
         .range(d3.quantize(d3.interpolateHcl("#ffcc33", "#66a0e2"), data.length));
 
@@ -67,7 +66,7 @@ render_graph1 = async (category) => {
         .attr("width", ({ count }) => x(count))
         .attr("height", y.bandwidth());
 
-    let counts = countRef.selectAll("text").data(data);
+    const counts = countRef.selectAll("text").data(data);
 
     counts.enter()
         .append("text")
@@ -113,7 +112,7 @@ function clean_data(data) {
     }
 
     for (const type of Object.keys(partitions)) {
-        partitions[type] = partitions[type].sort((a, b) => b.count - a.count)
+        partitions[type] = partitions[type].sort((a, b) => b.count - a.count || a.genre.localeCompare(b.genre))
     }
 
     return partitions

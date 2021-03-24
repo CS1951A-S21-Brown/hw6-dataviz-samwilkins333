@@ -22,16 +22,16 @@ const key_to_labels = {
     release_year: { prefix: "Recent", label: "Release Year" }
 }
 
-let x = d3.scaleLinear()
+const x = d3.scaleLinear()
     .range([0, width - margin_left - margin.right]);
 
-let y = d3.scaleBand()
+const y = d3.scaleBand()
     .range([0, height - margin.top - margin_bottom])
     .padding(0.1);
 
-let countRef = svg.append("g");
-let y_axis_label = svg.append("g");
-let x_axis_label = svg.append("g");
+const countRef = svg.append("g");
+const y_axis_label = svg.append("g");
+const x_axis_label = svg.append("g");
 
 x_axis_label.attr("transform", `translate(0, ${height - 100})`)
 
@@ -69,7 +69,7 @@ svg.append("text")
     .style("text-anchor", "middle")
     .text(`Release Years`);
 
-let title = svg.append("text")
+const title = svg.append("text")
     .attr("transform", `translate(0, -14)`)
     .attr("font-weight", "bold")
     .style("font-size", 15);
@@ -83,7 +83,7 @@ render_graph2 = async (ordering) => {
 
     let data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv("../data/netflix.csv")))
     data = data
-        .sort((a, b) => b[ordering] - a[ordering])
+        .sort((a, b) => b[ordering] - a[ordering] || b.release_year - a.release_year)
         .slice(0, cap)
 
     const min = d3.min(data, ({ average_runtime }) => average_runtime)

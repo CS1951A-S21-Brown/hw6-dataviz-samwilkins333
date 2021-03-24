@@ -1,6 +1,7 @@
 .header {
     padding-bottom: 20px;
     border-bottom: 1px solid black;
+    background: #eee;
 }
 
 .header > h3, h5 {
@@ -10,6 +11,15 @@
 }
 
 /* Include any custom CSS styling here! */
+
+#focus-toggle {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 31px;
+    height: 31px;
+    transition: 0.2s ease all;
+}
 
 .wrapper {
     display: flex;
@@ -39,4 +49,32 @@ div.tooltip {
     border: 1px solid black;
     border-radius: 5px;
     pointer-events: none;
+}
+
+.blurred {
+    -webkit-filter: blur(10px);
+    -moz-filter: blur(10px);
+    -o-filter: blur(10px);
+    -ms-filter: blur(10px);
+    filter: blur(10px);
+    transition: 0.2s ease all;
+    opacity: 0.3;
+}
+
+.focus-active div {
+    border-color: white !important;
+    cursor: crosshair;
+}
+
+body, div {
+    overflow: hidden;
+}
+
+.blurred:hover {
+    opacity: 1;
+    -webkit-filter: unset;
+    -moz-filter: unset;
+    -o-filter: unset;
+    -ms-filter: unset;
+    filter: unset;
 }
