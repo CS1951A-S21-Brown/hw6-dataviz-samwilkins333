@@ -4,10 +4,11 @@ const width = (MAX_WIDTH / 2),
       height = MAX_HEIGHT - 44,
       duration = 500
 
-const label_offset = 2,
-      padding = 10;
+const padding = 10;
 
 const margin_left = 80
+const margin_bottom = 60
+
 
 const svg = d3.select("#graph3")
     .append("svg")
@@ -22,20 +23,43 @@ let x = d3.scaleLinear()
     .range([0, width - margin_left - margin.right]);
 
 let y = d3.scaleBand()
-    .range([0, height - margin.top - margin.bottom])
+    .range([0, height - margin.top - margin_bottom])
     .padding(0.1);
 
 let countRef = svg.append("g");
 let y_axis_label = svg.append("g");
+let x_axis_label = svg.append("g");
+
+x_axis_label.attr("transform", `translate(0, ${height - 100})`)
+
+const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+const horizontal_connector = svg.append("path")
+    .attr("class", "connector")
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", "5,5")
+    .style("opacity", 0);
+
+const vertical_connector = svg.append("path")
+    .attr("class", "connector")
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", "5,5")
+    .style("opacity", 0);
 
 svg.append("text")
-    .attr("transform", `translate(${(width - margin_left - margin.right) / 2}, ${height - margin.top - margin.bottom + 1.5 * padding})`)
+    .attr("transform", `translate(${(width - margin_left - margin.right) / 2}, ${height - margin.top - margin_bottom + 1.5 * padding + 20})`)
     .attr("font-size", "12px")
     .style("text-anchor", "middle")
-    .text("Average Runtime");
+    .text("Average Runtime (Minutes)");
 
 svg.append("text")
-    .attr("transform", `translate(${-2 * margin_left / 3}, ${(height - margin.top - margin.bottom) / 2}), rotate(-90)`)
+    .attr("transform", `translate(${-2 * margin_left / 3}, ${(height - margin.top - margin_bottom) / 2}), rotate(-90)`)
     .attr("font-size", "12px")
     .style("text-anchor", "middle")
     .text(`Release Years`);
@@ -51,45 +75,78 @@ render_graph2 = async (ordering) => {
         .sort((a, b) => b[ordering] - a[ordering])
         .slice(0, 50)
 
-    x.domain([0, d3.max(data, ({ average_runtime }) => average_runtime)]);
+    const min = d3.min(data, ({ average_runtime }) => average_runtime)
+    const max = d3.max(data, ({ average_runtime }) => average_runtime)
+    x.domain([min, max]);
     y.domain(data.map(({ release_year }) => release_year));
 
+    x_axis_label.call(d3.axisBottom(x))
     y_axis_label.call(d3.axisLeft(y).tickSize(0).tickPadding(10));
 
-    let bars = svg.selectAll("rect").data(data);
+    const y_offset = y.bandwidth() / 2
 
-    let color = d3.scaleOrdinal()
-        .domain(data.map(({ release_year }) => release_year))
-        .range(d3.quantize(d3.interpolateHcl("#ffcc33", "#66a0e2"), data.length));
-
-    bars.enter()
-        .append("rect")
-        .merge(bars)
+    svg.append("path")
+        .datum(data)
+        .attr("fill", "steelblue")
+        .attr("fill-opacity", .3)
+        .attr("stroke", "none")
         .transition()
         .duration(duration)
-        .attr("fill", ({ release_year }) => color(release_year))
-        .attr("x", x(0))
-        .attr("y", ({ release_year }) => y(release_year))
-        .attr("width", ({ average_runtime }) => x(average_runtime))
-        .attr("height", y.bandwidth());
+        .attr("d", d3.area()
+            .x0(0)
+            .x1(({ average_runtime }) => x(average_runtime))
+            .y(({ release_year }) => y(release_year) + y_offset)
+        )
 
-    let counts = countRef.selectAll("text").data(data);
+    const circles = svg.selectAll("myCircles")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("fill", "steelblue")
+        .attr("stroke", "none")
+        .attr("title", ({ average_runtime }) => average_runtime)
+        .attr("cx", function(d) { return x(d.average_runtime) })
+        .attr("cy", function(d) { return y(d.release_year) + y_offset })
+        .attr("r", 4)
+        .style("cursor", "pointer")
+        .on("mouseover", ({ average_runtime, release_year }) => {
+            const this_y = y(release_year) + y_offset
+            const this_x = x(average_runtime)
 
-    counts.enter()
-        .append("text")
-        .merge(counts)
+            horizontal_connector.transition().duration(duration).style("opacity", .9);
+            horizontal_connector.attr("d", `M 0 ${this_y} H ${this_x}`)
+
+            vertical_connector.transition().duration(duration).style("opacity", .9);
+            vertical_connector.attr("d", `M ${this_x} ${this_y} v ${height - margin_bottom - this_y - 40}`)
+
+            tooltip.transition()
+                .duration(duration)
+                .style("opacity", .9);
+            tooltip.html(`${average_runtime} minutes in ${release_year}`)
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
+            })
+        .on("mouseout", () => {
+            tooltip.transition().duration(duration).style("opacity", 0)
+            horizontal_connector.transition().duration(duration).style("opacity", 0)
+            vertical_connector.transition().duration(duration).style("opacity", 0)
+        })
+
+    circles.transition().duration(duration)
+
+    svg.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 2)
         .transition()
         .duration(duration)
-        .attr("font-size", "10px")
-        .attr("x", ({ average_runtime }) => x(average_runtime) + label_offset)
-        .attr("y", ({ release_year }) => y(release_year) + 8)
-        .style("text-anchor", "start")
-        .text(({ average_runtime }) => average_runtime);
+        .attr("d", d3.line()
+            .x(function(d) { return x(d.average_runtime) })
+            .y(function(d) { return y(d.release_year) + y_offset })
+        )
 
     title.text(`Top 50 Average Movie Runtime Per Release Year (Descending by ${key_to_label[ordering]})`);
-
-    bars.exit().remove();
-    counts.exit().remove();
 }
 
 function clean_data(data) {
