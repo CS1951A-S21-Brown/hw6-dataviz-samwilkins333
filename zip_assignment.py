@@ -72,7 +72,7 @@ def main():
     failed = False
     # If the current directory doesn't contain this script, we'll exit and
     # tell the student to chdir to the right directory
-    for must_have_file in ["index.html", "main.js", "main.css"]:
+    for must_have_file in ["index.html", "main.mjs", "main.css"]:
         if find(must_have_file, curdir) == None:
             # We haven't found this file, and so we will print out a message and sys exit
             print("We cannot find the file {} in the directory that you are".format(must_have_file))

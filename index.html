@@ -13,16 +13,39 @@
         <h3>Assignment 6 &laquo; Data Visualization Dashboard &raquo;</h3>
     </div>
     <!--  We included a basic HTML structure for the 3 graphs here. Feel free to change this if you'd like  -->
-    <div class="row">
-        <div class="col-lg-6">
-            <div id="graph1"></div>
-            <div id="graph2"></div><br/>
+
+    <div class="wrapper cent">
+        <div class="wrapper col cent">
+            <div class="wrapper col cent">
+                <div class="wrapper cent" style="align-items: flex-end;margin-top: 10px">
+                    <div class="wrapper row">
+                        <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph1('Movie')">Movies</button>
+                        <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph1('TV Show')">TV Shows</button>
+                    </div>
+                </div>
+                <div class="wrapper col cent" id="graph1"></div>
+            </div>
+            <div class="wrapper col cent" id="graph2"></div>
         </div>
-        <div class="col-lg-6">
-            <div id="graph3"></div>
+        <div class="wrapper col cent" style="border-left: 1px dashed black">
+            <div class="wrapper cent" style="align-items: flex-end;margin-top: 10px">
+                <div class="wrapper row">
+                    <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph2('release_year')">Release Year</button>
+                    <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph2('average_runtime')">Average Runtime</button>
+                </div>
+            </div>
+            <div class="wrapper cent" id="graph3"></div>
         </div>
     </div>
     <!--Feel free to add more JavaScript files as needed-->
-    <script type="module" src="main.js"></script>
+    <script type="text/javascript">
+        let render_graph1, render_graph2, render_graph3
+        const MAX_WIDTH = Math.max(1080, window.innerWidth) - 1;
+        const MAX_HEIGHT = Math.max(720, window.innerHeight) - 67;
+        const margin = {top: 40, right: 50, bottom: 40, left: 210};
+    </script>
+    <script type="module" src="graphs/graph1.mjs"></script>
+    <script type="module" src="graphs/graph2.mjs"></script>
+    <script type="module" src="graphs/graph3.mjs"></script>
 </body>
 </html>
