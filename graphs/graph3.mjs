@@ -60,7 +60,7 @@ render_graph3 = async () => {
     const buckets = new Set(data.map(({ count }) => count)).size
     const color = d3.scaleOrdinal()
         .domain(data.map(({ count }) => count))
-        .range(d3.quantize(d3.interpolateHcl("#ccc", "#eee"), buckets));
+        .range(d3.quantize(d3.interpolateHcl("#ddd", "#888"), buckets));
 
     bars.enter()
         .append("rect")

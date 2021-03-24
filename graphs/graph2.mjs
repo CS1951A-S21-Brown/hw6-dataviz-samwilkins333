@@ -9,11 +9,6 @@ const width = (MAX_WIDTH / 2),
 const cap = 50
 const padding = 10;
 
-const margin_left = 80
-const margin_bottom = 60
-const margin_right = 175
-const margin_top = 60
-
 const suffixes = ["th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"]
 
 const svg = d3.select("#graph3")
@@ -21,7 +16,7 @@ const svg = d3.select("#graph3")
     .attr("width", width)
     .attr("height", height)
     .append("g")
-    .attr("transform", `translate(${margin_left}, ${margin_top})`);
+    .attr("transform", `translate(${large_margin.left}, ${large_margin.top})`);
 
 const ordering_to_clipper = {
     release_year: clip_data_release_year,
@@ -29,10 +24,10 @@ const ordering_to_clipper = {
 }
 
 const x = d3.scaleLinear()
-    .range([0, width - margin_left - margin_right]);
+    .range([0, width - large_margin.left - large_margin.right]);
 
 const y = d3.scaleBand()
-    .range([0, height - margin_top - margin_bottom])
+    .range([0, height - large_margin.top - large_margin.bottom])
     .padding(0.1);
 
 const countRef = svg.append("g");
@@ -64,13 +59,13 @@ const vertical_connector = svg.append("path")
     .style("opacity", 0);
 
 svg.append("text")
-    .attr("transform", `translate(${(width - margin_left - margin_right) / 2}, ${height - margin_top - margin_bottom + 4 * padding})`)
+    .attr("transform", `translate(${(width - large_margin.left - large_margin.right) / 2}, ${height - large_margin.top - large_margin.bottom + 4 * padding})`)
     .attr("font-size", "12px")
     .style("text-anchor", "middle")
     .text("Average Runtime (Minutes)");
 
 svg.append("text")
-    .attr("transform", `translate(${-2 * margin_left / 3}, ${(height - margin_top - margin_bottom) / 2}), rotate(-90)`)
+    .attr("transform", `translate(${-2 * large_margin.left / 3}, ${(height - large_margin.top - large_margin.bottom) / 2}), rotate(-90)`)
     .attr("font-size", "12px")
     .style("text-anchor", "middle")
     .text(`Release Years`);
@@ -227,7 +222,7 @@ function show({ release_year, average_runtime, this_y, this_x, ranking }) {
     horizontal_connector.attr("d", `M 0 ${this_y} H ${this_x}`)
 
     vertical_connector.transition().duration(duration).style("opacity", .9);
-    vertical_connector.attr("d", `M ${this_x} ${this_y} v ${height - margin_bottom - this_y - 40}`)
+    vertical_connector.attr("d", `M ${this_x} ${this_y} v ${height - large_margin.bottom - this_y - 40}`)
 
     tooltip.transition()
         .duration(duration)
@@ -275,7 +270,7 @@ const slider = document.getElementById('slider');
 function render_slider({ min, max, limit, ordering }) {
     slider.noUiSlider?.destroy()
 
-    slider.style.height = `${height - margin_bottom - margin_top - 22}px`
+    slider.style.height = `${height - large_margin.bottom - large_margin.top - 22}px`
 
     noUiSlider.create(slider, {
         range: { min, max },
