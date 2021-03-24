@@ -66,7 +66,7 @@ div.tooltip {
     cursor: crosshair;
 }
 
-body, div {
+body, #container {
     overflow: hidden;
 }
 
@@ -77,4 +77,14 @@ body, div {
     -o-filter: unset;
     -ms-filter: unset;
     filter: unset;
+}
+
+#slider {
+    position: absolute;
+    right: 90px;
+    top: 165px;
+}
+
+#slider .noUi-connect {
+	background: steelblue;
 }

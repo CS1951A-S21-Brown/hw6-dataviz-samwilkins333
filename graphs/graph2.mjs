@@ -1,14 +1,17 @@
 let cleaned_data = undefined
+let ordering = undefined
+let range = undefined
 
 const width = (MAX_WIDTH / 2),
       height = MAX_HEIGHT - BUTTON_HEIGHT,
       duration = 500
 
+const cap = 50
 const padding = 10;
 
 const margin_left = 80
 const margin_bottom = 60
-
+const margin_right = 175
 
 const svg = d3.select("#graph3")
     .append("svg")
@@ -17,13 +20,13 @@ const svg = d3.select("#graph3")
     .append("g")
     .attr("transform", `translate(${margin_left}, ${margin.top})`);
 
-const key_to_labels = {
+const key_to_title = {
     average_runtime: { prefix: "Top", label: "Average Runtime" },
-    release_year: { prefix: "Recent", label: "Release Year" }
+    release_year: (low, high, count) => `${count} Average Movie Runtimes By Release Year (${low} - ${high}, ${high - low + 1} years)`
 }
 
 const x = d3.scaleLinear()
-    .range([0, width - margin_left - margin.right]);
+    .range([0, width - margin_left - margin_right]);
 
 const y = d3.scaleBand()
     .range([0, height - margin.top - margin_bottom])
@@ -58,7 +61,7 @@ const vertical_connector = svg.append("path")
     .style("opacity", 0);
 
 svg.append("text")
-    .attr("transform", `translate(${(width - margin_left - margin.right) / 2}, ${height - margin.top - margin_bottom + 4 * padding})`)
+    .attr("transform", `translate(${(width - margin_left - margin_right) / 2}, ${height - margin.top - margin_bottom + 4 * padding})`)
     .attr("font-size", "12px")
     .style("text-anchor", "middle")
     .text("Average Runtime (Minutes)");
@@ -74,22 +77,52 @@ const title = svg.append("text")
     .attr("font-weight", "bold")
     .style("font-size", 15);
 
-render_graph2 = async (ordering) => {
+render_graph2 = async args => {
     svg.selectAll("circle").remove()
     svg.selectAll("path.area").remove()
     svg.selectAll("path.line").remove()
 
-    const cap = 50
-
     let data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv("../data/netflix.csv")))
-    data = data
-        .sort((a, b) => b[ordering] - a[ordering] || b.release_year - a.release_year)
-        .slice(0, cap)
 
-    const min = d3.min(data, ({ average_runtime }) => average_runtime)
-    const max = d3.max(data, ({ average_runtime }) => average_runtime)
+    let min = d3.min(data, ({ release_year }) => release_year)
+    let max = d3.max(data, ({ release_year }) => release_year)
+
+    ordering = ordering || args.ordering
+    const [low, high] = range = (args.range || range || [max - (cap - 1), max])
+
+    args.init && render_slider({ min, max, limit: cap - 1 })
+
+    min = d3.min(data, ({ average_runtime }) => average_runtime)
+    max = d3.max(data, ({ average_runtime }) => average_runtime)
+
     x.domain([min, max]);
+
+    data = data.sort((a, b) => b[ordering] - a[ordering] || b.release_year - a.release_year)
+
+    let low_index = 0
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].release_year <= high) {
+            low_index = i
+            break
+        }
+    }
+
+    let high_index = 50
+    for (let i = low_index; i < data.length; i++) {
+        const { release_year } = data[i]
+        if (release_year === low) {
+            high_index = i + 1
+            break
+        } else if (release_year < low) {
+            high_index = i
+            break
+        }
+    }
+
+    data = data.slice(low_index, high_index)
+
     y.domain(data.map(({ release_year }) => release_year));
+
     const y_offset = y.bandwidth() / 2
 
     x_axis_label.call(d3.axisBottom(x))
@@ -146,8 +179,7 @@ render_graph2 = async (ordering) => {
         .on("mouseover", _show)
         .on("mouseout", hide)
 
-    const { prefix, label } = key_to_labels[ordering]
-    title.text(`${prefix} ${cap} Average Movie Runtime By Release Year (Descending by ${label})`);
+    title.text(key_to_title[ordering](low, high, data.length));
 }
 
 function show({ release_year, average_runtime, this_y, this_x }) {
@@ -191,10 +223,41 @@ function clean_data(data) {
         const runtimes = release_year_mapper[release_year]
         const average_runtime = runtimes.reduce((acc, next) => acc + next, 0) / runtimes.length
         return {
-            release_year,
+            release_year: +release_year,
             average_runtime: +average_runtime.toFixed(2)
         }
     })
 }
 
-await render_graph2("release_year")
+const slider = document.getElementById('slider');
+
+function render_slider({ min, max, limit }) {
+
+    slider.style.height = `${height - margin_bottom - margin.top - 22}px`
+
+    noUiSlider.create(slider, {
+        range: { min, max },
+        start: [max - limit, max],
+        margin: 9,
+        limit,
+        connect: true,
+        direction: 'rtl',
+        orientation: 'vertical',
+        behaviour: 'tap-drag',
+        tooltips: true,
+        format: wNumb({ decimals: 0 }),
+        pips: {
+            mode: 'steps',
+            stepped: true,
+            density: 10
+        }
+    });
+
+    slider.noUiSlider.on("change", ([start, end]) => render_graph2({ range: [+start, +end]}))
+
+}
+
+await render_graph2({
+    ordering: "release_year",
+    init: true
+})

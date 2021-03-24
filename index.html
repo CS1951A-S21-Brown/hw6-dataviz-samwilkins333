@@ -6,7 +6,10 @@
         <title>Assignment 6 &laquo; Data Visualization Dashboard&raquo;</title>
         <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
         <link rel="stylesheet" href="main.css"/>
+        <link rel="stylesheet" href="nouislider/nouislider.css"/>
         <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+        <script type="text/javascript" src="nouislider/nouislider.js"></script>
+        <script type="text/javascript" src="nouislider/wNumb.js"></script>
     </head>
 <body>
     <div class="header">
@@ -34,12 +37,14 @@
         </div>
         <div class="wrapper col cent blurrable" style="border-left: 1px dashed black">
             <div class="wrapper cent" style="align-items: flex-end;margin-top: 10px">
-                <div class="wrapper row">
-                    <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph2('release_year')">Release Year</button>
-                    <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph2('average_runtime')">Average Runtime</button>
+                <div class="wrapper row" style="align-items: center">
+                    <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph2({ ordering: 'release_year' })">Release Year</button>
+                    <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph2({ ordering: 'average_runtime' })">Average Runtime</button>
                 </div>
             </div>
             <div id="graph3" class="wrapper cent"></div>
+            <div id="slider"></div>
+            </div>
         </div>
     </div>
     <script type="text/javascript">
