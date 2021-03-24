@@ -10,12 +10,12 @@ function toggleFocusMode() {
     if (focus_mode) {
         toggle.src = "./icons/no_focus.png"
         toggle.alt = toggle.title = "Disable Focus Mode"
-        targets.forEach(element => element.classList.add("blurred"))
+        targets.forEach(element => element.classList.add("mutable"))
         container.classList.add("focus-active")
     } else {
         toggle.src = "./icons/focus.png"
         toggle.alt = toggle.title = "Enable Focus Mode"
-        targets.forEach(element => element.classList.remove("blurred"))
+        targets.forEach(element => element.classList.remove("mutable"))
         container.classList.remove("focus-active")
     }
 }

@@ -18,7 +18,7 @@
     right: 18px;
     width: 31px;
     height: 31px;
-    transition: 0.2s ease all;
+    transition: 0.5s ease all;
 }
 
 .wrapper {
@@ -51,17 +51,12 @@ div.tooltip {
     pointer-events: none;
 }
 
-.blurred {
-    -webkit-filter: blur(10px);
-    -moz-filter: blur(10px);
-    -o-filter: blur(10px);
-    -ms-filter: blur(10px);
-    filter: blur(10px);
-    transition: 0.2s ease all;
-    opacity: 0.3;
+.mutable {
+    transition: 0.5s ease all;
+    opacity: 0.1;
 }
 
-.focus-active div {
+.focus-active div.blurrable {
     border-color: white !important;
     cursor: crosshair;
 }
@@ -70,13 +65,9 @@ body, #container {
     overflow: hidden;
 }
 
-.blurred:hover {
+.mutable:hover {
     opacity: 1;
-    -webkit-filter: unset;
-    -moz-filter: unset;
-    -o-filter: unset;
-    -ms-filter: unset;
-    filter: unset;
+    filter: revert;
 }
 
 #slider {
