@@ -1,7 +1,7 @@
 let cleaned_data = undefined
 
 const width = MAX_WIDTH / 2,
-      height = MAX_HEIGHT / 2 - BUTTON_HEIGHT - 10,
+      height = MAX_HEIGHT / 2 - BUTTON_HEIGHT - 1,
       duration = 500
 
 const padding = 10,

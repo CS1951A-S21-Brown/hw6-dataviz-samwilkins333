@@ -42,7 +42,7 @@
             <div id="graph2" class="wrapper _col cent blurrable"></div>
         </div>
         <div class="wrapper _col cent blurrable" style="border-left: 1px dashed black">
-            <div class="wrapper cent" style="align-items: flex-end;margin-top: 10px">
+            <div class="wrapper cent" style="align-items: flex-end;padding: 10px 0 10px 0;border-bottom: 1px solid #00000011">
                 <div class="wrapper _row" style="align-items: center">
                     <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph2({ ordering: 'release_year', init: true })">Release Year</button>
                     <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph2({ ordering: 'average_runtime', init: true })">Average Runtime</button>
@@ -56,7 +56,7 @@
         let render_graph1, render_graph2, render_graph3
         const MAX_WIDTH = Math.max(1080, window.innerWidth) - 1;
         const MAX_HEIGHT = Math.max(720, window.innerHeight) - 67;
-        const BUTTON_HEIGHT = 44
+        const BUTTON_HEIGHT = 55
         const margin = { top: 40, right: 50, bottom: 40, left: 210 };
         const large_margin = { top: 60, right: 175, bottom: 60, left: 80 };
     </script>
