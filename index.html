@@ -23,21 +23,27 @@
         />
     </div>
     <div id="container" class="wrapper cent">
-        <div class="wrapper col cent">
-            <div class="wrapper col cent blurrable" style="border-bottom: 1px dashed black;">
-                <div class="wrapper cent" style="align-items: flex-end;margin-top: 10px">
-                    <div class="wrapper row">
+        <div class="wrapper _col cent">
+            <div class="wrapper _col cent blurrable" style="border-bottom: 1px dashed black;">
+                <div class="wrapper _row" style="display: flex;align-items: flex-end;padding: 10px 0 10px 0;border-bottom: 1px solid #00000011">
+                    <div class="_row" style="display: flex;width: 100%;">
                         <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph1('Movie')">Movies</button>
                         <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph1('TV Show')">TV Shows</button>
+                        <div id="title1" class="wrapper _row cent"></div>
                     </div>
                 </div>
-                <div id="graph1" class="wrapper col cent"></div>
+                <div class="wrapper _row cent">
+                    <div id="pie-data" class="wrapper _row">
+                        <div id="labels-list" class="wrapper _col"></div>
+                    </div>
+                    <div id="graph1" style="display: flex" class="cent"></div>
+                </div>
             </div>
-            <div id="graph2" class="wrapper col cent blurrable"></div>
+            <div id="graph2" class="wrapper _col cent blurrable"></div>
         </div>
-        <div class="wrapper col cent blurrable" style="border-left: 1px dashed black">
+        <div class="wrapper _col cent blurrable" style="border-left: 1px dashed black">
             <div class="wrapper cent" style="align-items: flex-end;margin-top: 10px">
-                <div class="wrapper row" style="align-items: center">
+                <div class="wrapper _row" style="align-items: center">
                     <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph2({ ordering: 'release_year', init: true })">Release Year</button>
                     <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph2({ ordering: 'average_runtime', init: true })">Average Runtime</button>
                 </div>

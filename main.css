@@ -32,11 +32,11 @@
     justify-content: center;
 }
 
-.col {
+._col {
     flex-direction: column;
 }
 
-.row {
+._row {
     flex-direction: row;
 }
 
@@ -78,4 +78,33 @@ body, #container {
 
 #slider .noUi-connect {
 	background: steelblue;
+}
+
+#labels-list {
+    border-left: 1px solid #00000022;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 7px;
+    overflow-y: scroll;
+}
+
+.item {
+    font-size: 10px;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    cursor: pointer;
+    padding-left: 3px;
+    padding-right: 3px;
+    border-radius: 2px;
+}
+
+.slice, .item {
+    transition: 0.2s ease all;
+}
+
+#title1 {
+    height: 34px;
 }
