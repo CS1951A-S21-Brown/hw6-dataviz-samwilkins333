@@ -7,7 +7,7 @@ const width = (MAX_WIDTH / 2),
 const label_offset = 2,
       padding = 10;
 
-const svg = d3.select("#graph2")
+const svg = d3.select("#graph3")
     .append("svg")
     .attr("width", width)
     .attr("height", height)
@@ -19,7 +19,7 @@ const x = d3.scaleLinear()
 
 const y = d3.scaleBand()
     .range([0, height - margin.top - margin.bottom])
-    .padding(0.1);
+    .padding(0.3);
 
 const countRef = svg.append("g");
 const y_axis_label = svg.append("g");
@@ -31,7 +31,7 @@ svg.append("text")
     .text("Number of Shared Movies");
 
 svg.append("text")
-    .attr("transform", `translate(${-10 * margin.left / 11}, ${(height - margin.top - margin.bottom) / 2}), rotate(-90)`)
+    .attr("transform", `translate(${-7 * margin.left / 8}, ${(height - margin.top - margin.bottom) / 2}), rotate(-90)`)
     .attr("font-size", "12px")
     .style("text-anchor", "middle")
     .text(`(Director, Actor) Pairs`);
@@ -42,10 +42,14 @@ const title = svg.append("text")
     .attr("font-weight", "bold")
     .style("font-size", 15);
 
-render_graph3 = async ({ allowSelfPairs }) => {
-    const cap = 20
+render_graph3 = async () => {
+    const cap = 15
+
+    const allowSelfPairs = document.getElementById("repeats").checked
+    const langVersionsUnique = document.getElementById("lang_versions").checked
 
     let data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv("../data/netflix.csv")))
+    data = data[langVersionsUnique ? 1 : 0]
 
     if (!allowSelfPairs) {
         data = data.filter(({ director, actor }) => director !== actor)
@@ -62,7 +66,10 @@ render_graph3 = async ({ allowSelfPairs }) => {
     x.domain([0, d3.max(data, ({ count }) => count)]);
     y.domain(data.map(({ pair }) => pair));
 
-    y_axis_label.call(d3.axisLeft(y).tickSize(0).tickPadding(10));
+    y_axis_label
+        .transition()
+        .duration(duration)
+        .call(d3.axisLeft(y).tickSize(0).tickPadding(5));
 
     const bars = svg.selectAll("rect").data(data);
 
@@ -91,7 +98,7 @@ render_graph3 = async ({ allowSelfPairs }) => {
         .duration(duration)
         .attr("font-size", "10px")
         .attr("x", ({ count }) => x(count) + label_offset)
-        .attr("y", ({ pair }) => y(pair) + 9.5)
+        .attr("y", ({ pair }) => y(pair) + 8)
         .style("text-anchor", "start")
         .text(({ count }) => count);
 
@@ -111,22 +118,24 @@ function clean_data(data) {
                 const joint = `${d}, ${a}`
                 let existing = director_actor_pairs[joint]
                 if (!existing) {
-                    existing = director_actor_pairs[joint] = new Set()
+                    existing = director_actor_pairs[joint] = [new Set(), new Set()]
                 }
-                existing.add(title.replace(/ \(.* Version\)/, ""))
+                existing[0].add(title.replace(/ \(.* Version\)/, ""))
+                existing[1].add(title)
             }
         }
     }
 
-    return Object.keys(director_actor_pairs)
-        .map(joint => {
-            const [d, a] = joint.split(", ")
-            return {
-                director: d,
-                actor: a,
-                count: director_actor_pairs[joint].size
-            }
-        })
+    const unique = [], collapsed = []
+
+    Object.keys(director_actor_pairs).forEach(joint => {
+        const [d, a] = joint.split(", ")
+        const [c, u] = director_actor_pairs[joint]
+        collapsed.push({ director: d, actor: a, count: c.size })
+        unique.push({ director: d, actor: a, count: u.size })
+    })
+
+    return [collapsed, unique]
 }
 
-await render_graph3({ allowSelfPairs: false })
+await render_graph3()

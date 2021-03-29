@@ -11,7 +11,7 @@ const padding = 10;
 
 const suffixes = ["th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"]
 
-const svg = d3.select("#graph3")
+const svg = d3.select("#graph2")
     .append("svg")
     .attr("width", width)
     .attr("height", height)
