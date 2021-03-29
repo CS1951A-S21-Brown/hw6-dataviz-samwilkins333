@@ -94,6 +94,9 @@ render_graph2 = async args => {
 
     y.domain(data.map(({release_year}) => release_year));
 
+    const data_map = {}
+    data.forEach(({release_year, average_runtime}) => data_map[release_year] = average_runtime)
+
     const y_offset = y.bandwidth() / 2
 
     x_axis_label.call(d3.axisBottom(x))
@@ -113,8 +116,9 @@ render_graph2 = async args => {
 
     y_axis_label.selectAll("text")
         .style("cursor", "pointer")
+        .style("opacity", release_year => data_map[release_year] ? 1 : 0.3)
         .on("mouseover", release_year => {
-            const {average_runtime} = data.find(d => d.release_year === release_year)
+            const average_runtime = data_map[release_year]
             _show({release_year, average_runtime})
         })
         .on("mouseout", hide)
@@ -149,7 +153,8 @@ render_graph2 = async args => {
         return d.average_runtime
     })
 
-    temp = line.enter()
+    temp = line
+        .enter()
         .append("path")
         .attr("class", "line")
         .merge(line)
@@ -187,7 +192,7 @@ render_graph2 = async args => {
     }
 
     temp
-        .attr("fill", "steelblue")
+        .attr("fill", ({average_runtime}) => average_runtime ? "steelblue" : "black")
         .attr("stroke", "none")
         .attr("title", ({average_runtime}) => average_runtime)
         .attr("cx", ({average_runtime}) => x(average_runtime))
