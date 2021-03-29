@@ -80,6 +80,13 @@ const title = svg.append("text")
     .attr("font-weight", "bold")
     .style("font-size", 15);
 
+function trunc(word, limit=18) {
+    if (word.length > limit) {
+        word = `${word.substring(0, limit)}...`
+    }
+    return word
+}
+
 render_graph3 = async (override) => {
     _override = override ?? _override
 
@@ -128,7 +135,7 @@ render_graph3 = async (override) => {
 
     data = data
         .map(({director, actor, count}) => ({
-            pair: `${director}, ${actor}`,
+            pair: `${trunc(director)}, ${trunc(actor)}`,
             count
         }))
         .sort((a, b) => b.count - a.count || a.pair.localeCompare(b.pair))
@@ -176,8 +183,8 @@ render_graph3 = async (override) => {
     const prefix = initial > cap ? "Top" : data.length === 1 ? "The" : "All"
     const count = initial > cap ? `${data.length} of ${initial}` : data.length
     const suffix = data.length === 1 ? "" : "s"
-    const director = _override?.d ?? "Director"
-    const actor = _override?.a ?? "Actor"
+    const director = trunc(_override?.d ?? "Director")
+    const actor = trunc(_override?.a ?? "Actor")
 
     y_axis_text.text(`(${director}, ${actor}) Pair${suffix}`);
     title.text(`${prefix} ${count} Movie (${director}, ${actor}) Pair${suffix}`);
@@ -187,6 +194,8 @@ render_graph3 = async (override) => {
 }
 
 function clean_data(data) {
+    data = data.filter(d => d.show_id !== "80131414")
+
     const all_directors = new Set()
     const all_actors = new Set()
 
