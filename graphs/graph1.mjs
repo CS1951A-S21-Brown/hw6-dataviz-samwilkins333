@@ -29,6 +29,9 @@ const back = document.getElementById("back-pie")
 const select = document.getElementById("select-pie")
 const clear = document.getElementById("clear-pie")
 
+const movie = document.getElementById("movie")
+const show = document.getElementById("show")
+
 const countRef = svg.append("g");
 
 const title = d3
@@ -105,7 +108,9 @@ render_graph1 = async ({ category, focus_action }) => {
     back.disabled = clear.disabled = select.disabled = true
 
     if (category) {
-        focused = new Set()
+        movie.disabled = category === "Movie"
+        show.disabled = category === "TV Show"
+        clear_focus()
     }
 
     _category = category ?? _category
@@ -128,9 +133,8 @@ render_graph1 = async ({ category, focus_action }) => {
                 prev_focused = prev_focused.slice(0, focus_index + 1)
                 break
             case "clear":
-                prev_focused = [null]
-                focus_index = 0
-                focused = new Set()
+                clear_focus()
+                break
         }
     } else {
         if (focused.size > 1) {
@@ -140,8 +144,6 @@ render_graph1 = async ({ category, focus_action }) => {
         }
         focused = new Set()
     }
-
-    console.log(focused, prev_focused, focus_index)
 
     const pie_data_view = document.getElementById("pie-data")
     pie_data_view.style.height = `${height}px`
@@ -236,6 +238,12 @@ render_graph1 = async ({ category, focus_action }) => {
 
     relax()
     ensure_button_focus()
+}
+
+function clear_focus() {
+    prev_focused = [null]
+    focus_index = 0
+    focused = new Set()
 }
 
 function ensure_button_focus() {

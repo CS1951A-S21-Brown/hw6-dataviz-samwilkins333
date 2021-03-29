@@ -31,10 +31,10 @@
             <div class="wrapper _row"
                  style="display: flex;align-items: flex-end;padding: 10px 0 10px 0;border-bottom: 1px solid #00000011">
                 <div class="_row" style="display: flex;width: 100%;">
-                    <button style="margin-left: 10px" type="button" class="btn btn-info"
+                    <button id="movie" style="margin-left: 10px" type="button" class="btn btn-info"
                             onclick="render_graph1({ category: 'Movie' })">Movies
                     </button>
-                    <button style="margin-left: 10px" type="button" class="btn btn-info"
+                    <button id="show" style="margin-left: 10px" type="button" class="btn btn-info"
                             onclick="render_graph1({ category: 'TV Show' })">TV Shows
                     </button>
                     <div id="title1" class="wrapper _row cent"></div>
@@ -91,6 +91,7 @@
              style="align-items: flex-end;padding: 10px 0 10px 0;border-bottom: 1px solid #00000011">
             <div class="wrapper _row" style="align-items: center">
                 <button
+                        id="release_year"
                         style="margin-left: 10px"
                         type="button"
                         class="btn btn-info"
@@ -98,9 +99,10 @@
                                 ordering: 'release_year',
                                 init: true,
                             })"
-                >Release Year
+                >Chronological
                 </button>
                 <button
+                        id="average_runtime"
                         style="margin-left: 10px"
                         type="button"
                         class="btn btn-info"
@@ -108,7 +110,7 @@
                                 ordering: 'average_runtime',
                                 init: true,
                             })"
-                >Average Runtime
+                >Ranked
                 </button>
                 <div class="wrapper"
                      style="align-items: center;height: 34px;justify-content: flex-end;padding-right: 10px;">

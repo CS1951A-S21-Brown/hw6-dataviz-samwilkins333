@@ -11,6 +11,9 @@ const padding = 10;
 
 const suffixes = ["th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"]
 
+const ryb = document.getElementById("release_year")
+const arb = document.getElementById("average_runtime")
+
 const svg = d3.select("#graph2")
     .append("svg")
     .attr("width", width)
@@ -77,11 +80,14 @@ const title = svg.append("text")
 
 render_graph2 = async args => {
     const transition = document.getElementById('transition').checked
+    ordering = args.ordering || ordering
 
     const full_data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv("../data/netflix.csv")))
 
     if (args.init) {
         range = undefined
+        ryb.disabled = ordering === "release_year"
+        arb.disabled = ordering === "average_runtime"
     }
 
     let min = d3.min(full_data, ({average_runtime}) => average_runtime)
@@ -90,7 +96,7 @@ render_graph2 = async args => {
 
     const ranked_data = [...full_data].sort((a, b) => b.average_runtime - a.average_runtime)
 
-    const {data, title_ordering} = ordering_to_clipper[ordering = args.ordering || ordering](args, full_data)
+    const {data, title_ordering} = ordering_to_clipper[ordering](args, full_data)
 
     y.domain(data.map(({release_year}) => release_year));
 
@@ -332,5 +338,4 @@ function render_slider({min, max, limit, ordering}) {
 await render_graph2({
     ordering: "release_year",
     init: true,
-    transition: true
 })
