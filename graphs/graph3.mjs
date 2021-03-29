@@ -19,21 +19,39 @@ const filter = document.getElementById("filter")
 
 filter.addEventListener("blur", () => {
     if (!filter.value) {
-        _override = undefined
         // noinspection JSIgnoredPromiseFromCall
-        render_graph3()
+        clear_filter(false)
     }
 })
 
 filter.addEventListener("keydown", async e => {
     switch (e.key) {
         case "Escape":
-            filter.value = ""
-            _override = undefined
             // noinspection ES6MissingAwait
-            render_graph3()
+            clear_filter()
+            break
+        case "f":
+            e.stopPropagation()
+            e.stopImmediatePropagation()
+            break
     }
 })
+
+filter.addEventListener("keypress", e => {
+    switch (e.key) {
+        case "f":
+            e.stopPropagation()
+            e.stopImmediatePropagation()
+            break
+    }
+})
+
+clear_filter = async (focus=true) => {
+    filter.value = ""
+    _override = undefined
+    focus && filter.focus()
+    return render_graph3()
+}
 
 const x = d3.scaleLinear()
     .range([0, width - margin.left - margin.right]);
@@ -51,11 +69,10 @@ svg.append("text")
     .style("text-anchor", "middle")
     .text("Number of Shared Movies");
 
-svg.append("text")
+const y_axis_text = svg.append("text")
     .attr("transform", `translate(${-7 * margin.left / 8}, ${(height - margin.top - margin.bottom) / 2}), rotate(-90)`)
     .attr("font-size", "12px")
     .style("text-anchor", "middle")
-    .text(`(Director, Actor) Pairs`);
 
 
 const title = svg.append("text")
@@ -157,11 +174,13 @@ render_graph3 = async (override) => {
         .text(({count}) => count);
 
     const prefix = initial > cap ? "Top" : data.length === 1 ? "The" : "All"
+    const count = initial > cap ? `${data.length} of ${initial}` : data.length
     const suffix = data.length === 1 ? "" : "s"
     const director = _override?.d ?? "Director"
     const actor = _override?.a ?? "Actor"
 
-    title.text(`${prefix} ${data.length} Movie (${director}, ${actor}) Pair${suffix}`);
+    y_axis_text.text(`(${director}, ${actor}) Pair${suffix}`);
+    title.text(`${prefix} ${count} Movie (${director}, ${actor}) Pair${suffix}`);
 
     bars.exit().remove();
     counts.exit().remove();

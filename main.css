@@ -118,6 +118,7 @@ label {
     padding: 0 5px 0 5px;
     margin-left: 10px;
     outline-color: mediumaquamarine;
+    width: 200px;
 }
 
 .toggle {
@@ -139,4 +140,11 @@ label {
     margin-left: 10px !important;
     margin-top: -0 !important;
     border-top-left-radius: 0 !important;
+}
+
+#clear-filter {
+    width: 10px;
+    height: 10px;
+    cursor: pointer;
+    margin-left: -30px;
 }

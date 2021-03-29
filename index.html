@@ -50,6 +50,13 @@
                                 name="filter"
                             />
                             <label for="filter"></label>
+                            <img
+                                id="clear-filter"
+                                src="icons/clear.png"
+                                alt="Clear Search Filter"
+                                title="Clear Search Filter"
+                                onclick="clear_filter()"
+                            />
                         </div>
                         <div class="wrapper _col" style="align-items: flex-end;justify-content: center;height: 34px;">
                             <div class="_col" style="display: flex;width: 150px;justify-content: center;margin-right: 10px">
@@ -100,7 +107,7 @@
         </div>
     </div>
     <script type="text/javascript">
-        let render_graph1, render_graph2, render_graph3
+        let render_graph1, render_graph2, render_graph3, clear_filter
         const MAX_WIDTH = Math.max(1080, window.innerWidth) - 1;
         const MAX_HEIGHT = Math.max(720, window.innerHeight) - 67;
         const BUTTON_HEIGHT = 55
