@@ -217,27 +217,10 @@ function clip_data_release_year(args, full_data) {
 
     let data = full_data.sort((a, b) => b.release_year - a.release_year)
 
-    let low_index = 0
-    for (let i = 0; i < data.length; i++) {
-        if (data[i].release_year <= high) {
-            low_index = i
-            break
-        }
-    }
+    const low_index = full_data.findIndex(({release_year}) => release_year === high)
+    const high_index = full_data.findIndex(({release_year}) => release_year === low)
 
-    let high_index = 50
-    for (let i = low_index; i < data.length; i++) {
-        const {release_year} = data[i]
-        if (release_year === low) {
-            high_index = i + 1
-            break
-        } else if (release_year < low) {
-            high_index = i
-            break
-        }
-    }
-
-    data = data.slice(low_index, high_index)
+    data = data.slice(low_index, high_index + 1)
 
     return {data, title_ordering: "Chronological"}
 }
