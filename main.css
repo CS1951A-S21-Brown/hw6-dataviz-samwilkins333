@@ -19,6 +19,7 @@
     width: 31px;
     height: 31px;
     transition: 0.5s ease all;
+    cursor: pointer;
 }
 
 .wrapper {
@@ -114,8 +115,8 @@ label {
 }
 
 #filter {
-    margin-left: 205px;
     padding: 0 5px 0 5px;
+    margin-right: 10px;
 }
 
 .toggle {

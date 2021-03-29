@@ -109,10 +109,11 @@ render_graph2 = async args => {
         show({ release_year, average_runtime, this_y, this_x, ranking })
     }
 
+    let temp = y_axis_label
     if (transition) {
-        y_axis_label.transition().duration(duration)
+        temp = y_axis_label.transition().duration(duration)
     }
-    y_axis_label.call(d3.axisLeft(y).tickSize(0).tickPadding(10));
+    temp.call(d3.axisLeft(y).tickSize(0).tickPadding(10));
 
     y_axis_label.selectAll("text")
         .style("cursor", "pointer")
@@ -124,7 +125,7 @@ render_graph2 = async args => {
 
     const area = svg.selectAll(".area").data([data], function(d){ return d.average_runtime })
 
-    let temp = area
+    temp = area
         .enter()
         .append("path")
         .merge(area)
@@ -295,7 +296,7 @@ function clean_data(data) {
         release_year_mapper[release_year] = existing
     }
 
-    return Object.keys(release_year_mapper).map(release_year => {
+    const present = Object.keys(release_year_mapper).map(release_year => {
         const runtimes = release_year_mapper[release_year]
         const average_runtime = runtimes.reduce((acc, next) => acc + next, 0) / runtimes.length
         return {
@@ -303,6 +304,18 @@ function clean_data(data) {
             average_runtime: +average_runtime.toFixed(2)
         }
     })
+
+    const years = new Set(present.map(({ release_year }) => release_year))
+    const min = Math.min(...years)
+    const max = Math.max(...years)
+
+    for (let year = min + 1; year < max; year++) {
+        if (!years.has(year)) {
+            present.push({ release_year: year, average_runtime: 0 })
+        }
+    }
+
+    return present
 }
 
 const slider = document.getElementById('slider');
