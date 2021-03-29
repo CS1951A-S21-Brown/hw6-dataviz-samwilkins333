@@ -126,7 +126,7 @@ render_graph1 = async (category) => {
         .on("mouseover", ({ data: { genre } }) => focus(genre, color(genre)))
         .on("mouseout", relax)
 
-    title.text(`Number of Titles Per Genre (${category}s)`);
+    title.text(`Number of Titles Per Genre [${category}s]`);
 
     slices.transition().duration(duration)
 

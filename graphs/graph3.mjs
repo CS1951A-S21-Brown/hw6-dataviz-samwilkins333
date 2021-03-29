@@ -17,9 +17,11 @@ const svg = d3.select("#graph3")
 
 const filter = document.getElementById("filter")
 
-filter.addEventListener("blur", async e => {
-    if (e.target.value === "") {
+filter.addEventListener("blur", () => {
+    if (!filter.value) {
         _override = undefined
+        // noinspection JSIgnoredPromiseFromCall
+        render_graph3()
     }
 })
 
@@ -27,6 +29,7 @@ filter.addEventListener("keydown", async e => {
     switch (e.key) {
         case "Escape":
             filter.value = ""
+            _override = undefined
             // noinspection ES6MissingAwait
             render_graph3()
     }
@@ -104,6 +107,8 @@ render_graph3 = async (override) => {
         data = data.filter(d => d[key] === _override[target])
     }
 
+    const initial = data.length
+
     data = data
         .map(({director, actor, count}) => ({
             pair: `${director}, ${actor}`,
@@ -111,8 +116,6 @@ render_graph3 = async (override) => {
         }))
         .sort((a, b) => b.count - a.count || a.pair.localeCompare(b.pair))
         .slice(0, cap)
-
-    console.log(data)
 
     x.domain([0, d3.max(data, ({count}) => count)]);
     y.domain(data.map(({pair}) => pair));
@@ -153,7 +156,12 @@ render_graph3 = async (override) => {
         .style("text-anchor", "start")
         .text(({count}) => count);
 
-    title.text(`Top ${cap} Most Frequent Movie (Director, Actor) Pairs`);
+    const prefix = initial > cap ? "Top" : data.length === 1 ? "The" : "All"
+    const suffix = data.length === 1 ? "" : "s"
+    const director = _override?.d ?? "Director"
+    const actor = _override?.a ?? "Actor"
+
+    title.text(`${prefix} ${data.length} Movie (${director}, ${actor}) Pair${suffix}`);
 
     bars.exit().remove();
     counts.exit().remove();

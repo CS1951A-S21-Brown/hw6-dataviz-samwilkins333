@@ -190,7 +190,7 @@ render_graph2 = async args => {
         .attr("r", 4)
         .style("cursor", "pointer")
 
-    title.text(`Average Movie Runtimes Per Release Year (${title_ordering})`)
+    title.text(`Average Movie Runtimes Per Release Year [${title_ordering}]`)
 
     line.exit().remove()
     points.exit().remove()
