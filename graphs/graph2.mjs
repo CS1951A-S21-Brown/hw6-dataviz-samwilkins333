@@ -192,7 +192,7 @@ render_graph2 = async args => {
         .attr("title", ({average_runtime}) => average_runtime)
         .attr("cx", ({average_runtime}) => x(average_runtime))
         .attr("cy", ({release_year}) => y(release_year) + y_offset)
-        .attr("r", 4)
+        .attr("r", 3)
         .style("cursor", "pointer")
 
     title.text(`Average Movie Runtimes Per Release Year [${title_ordering}]`)
