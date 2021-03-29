@@ -18,6 +18,8 @@ const svg = d3.select("#graph1")
     .append("g")
     .attr("transform", `translate(${height / 2}, ${height / 2})`);
 
+const { x: offset_x, y: offset_y } = document.getElementById("graph1").getBoundingClientRect()
+
 const x = d3.scaleLinear()
     .range([0, width - margin.left - margin.right]);
 
@@ -222,8 +224,23 @@ render_graph1 = async ({category, focus_action}) => {
         .attr("class", ({data}) => `slice ${data.genre.replace(/\s+/g, "")}`)
         .style("cursor", "pointer")
         .style("stroke-width", "1px")
-        .on("mouseover", ({data: {genre}}) => focus(genre, color(genre)))
-        .on("mouseout", relax)
+        .on("mouseover", d => {
+            const [x, y] = arc.centroid(d)
+            const { genre, count } = d.data
+            tooltip
+                .transition()
+                .duration(duration)
+                .style("opacity", .9)
+            tooltip
+                .html(`${genre} [${count}]`)
+                .style("left", `${offset_x + x + height / 2}px`)
+                .style("top", `${offset_y + y + height / 2}px`);
+            focus(genre, color(genre))
+        })
+        .on("mouseout", () => {
+            tooltip.transition().duration(duration).style("opacity", 0)
+            relax()
+        })
         .on("click", ({data: {genre}}) => toggleSelect(genre))
 
     title.text(`Number of Titles Per Genre [${_category}s]`);
@@ -247,7 +264,8 @@ function clear_focus() {
 }
 
 function ensure_button_focus() {
-    select.disabled = focused.size === 0 || document.getElementsByClassName("item").length === 2
+    const numItems = document.getElementsByClassName("item").length
+    select.disabled = focused.size <= 1 || numItems === 2 || numItems === focused.size
     back.disabled = prev_focused.length === 1
     clear.disabled = focused.size === 0 && prev_focused.length === 1
 }

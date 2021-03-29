@@ -99,6 +99,7 @@ body, #container {
     padding-left: 3px;
     padding-right: 3px;
     border-radius: 2px;
+    margin-bottom: 1px;
 }
 
 .slice, .item {

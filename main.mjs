@@ -8,6 +8,12 @@ document.addEventListener("keypress", e => {
     }
 })
 
+tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("left", 0)
+    .style("top", 0)
+    .style("opacity", 0);
+
 function toggleFocusMode() {
     const toggle = document.getElementById("focus-toggle")
     const container = document.getElementById("container")

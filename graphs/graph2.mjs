@@ -39,12 +39,6 @@ const x_axis_label = svg.append("g");
 
 x_axis_label.attr("transform", `translate(0, ${height - 100})`)
 
-const tooltip = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("left", 0)
-    .style("top", 0)
-    .style("opacity", 0);
-
 const horizontal_connector = svg.append("path")
     .attr("class", "connector")
     .attr("fill", "none")
