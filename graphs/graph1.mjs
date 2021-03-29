@@ -88,7 +88,7 @@ function relax() {
     }
 }
 
-function toggleSelect(genre, logical_update=true) {
+function toggleSelect(genre, logical_update = true) {
     const id = genre.replace(/\s+/g, "")
     const relevant = document.getElementsByClassName(id)
     const checkbox = relevant.item(0).children.item(0)
@@ -104,7 +104,7 @@ function toggleSelect(genre, logical_update=true) {
     }
 }
 
-render_graph1 = async ({ category, focus_action }) => {
+render_graph1 = async ({category, focus_action}) => {
     back.disabled = clear.disabled = select.disabled = true
 
     if (category) {
@@ -284,4 +284,4 @@ function clean_data(data) {
     return partitions
 }
 
-await render_graph1({ category: "Movie" })
+await render_graph1({category: "Movie"})

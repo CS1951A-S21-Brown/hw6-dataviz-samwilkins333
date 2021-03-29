@@ -80,7 +80,7 @@ const title = svg.append("text")
     .attr("font-weight", "bold")
     .style("font-size", 15);
 
-function trunc(word, limit=18) {
+function trunc(word, limit = 18) {
     if (word.length > limit) {
         word = `${word.substring(0, limit)}...`
     }
