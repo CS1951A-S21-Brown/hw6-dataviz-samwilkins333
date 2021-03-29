@@ -1,4 +1,7 @@
 let cleaned_data = undefined
+let _category = undefined
+let prev_focused = [null]
+let focus_index = 0
 
 const width = MAX_WIDTH / 2,
     height = MAX_HEIGHT / 2 - BUTTON_HEIGHT - 1,
@@ -22,9 +25,18 @@ const y = d3.scaleBand()
     .range([0, height - margin.top - margin.bottom])
     .padding(0.1);
 
+const back = document.getElementById("back-pie")
+const select = document.getElementById("select-pie")
+const clear = document.getElementById("clear-pie")
+
 const countRef = svg.append("g");
 
-const title = d3.select("#title1").append("svg").attr("width", "350").attr("height", "34").append("text")
+const title = d3
+    .select("#title1")
+    .append("svg")
+    .attr("width", "300")
+    .attr("height", "34")
+    .append("text")
     .attr("transform", `translate(140, 22)`)
     .style("font-weight", "bold")
     .style("font-size", 15)
@@ -33,37 +45,103 @@ const title = d3.select("#title1").append("svg").attr("width", "350").attr("heig
 function focus(id, color) {
     id = id.replace(/\s+/g, "")
 
-    for (const slice of [...document.getElementsByClassName("slice")]) {
-        slice.style.opacity = "0.5"
-    }
-    for (const item of [...document.getElementsByClassName("item")]) {
-        item.style.opacity = "0.5"
+    const slices = [...document.getElementsByClassName("slice")]
+    const items = [...document.getElementsByClassName("item")]
+
+    for (let i = 0; i < slices.length; i++) {
+        const item = items[i]
+        const slice = slices[i]
+        if (!item.children.item(0).checked) {
+            item.style.opacity = "0.5"
+            slice.style.opacity = "0.5"
+        }
     }
     for (const target of [...document.getElementsByClassName(id)]) {
         target.style.backgroundColor = color || "white"
         target.style.opacity = "1"
-        target.scrollIntoView({behavior: "smooth", block: "end"})
-        for (const child of [...target.children]) {
-            child.style.fontSize = "14px"
-        }
     }
 }
 
 function relax() {
-    for (const slice of [...document.getElementsByClassName("slice")]) {
-        slice.style.opacity = "1"
-    }
-    for (const item of [...document.getElementsByClassName("item")]) {
-        item.style.opacity = "1"
-        item.style.backgroundColor = "white"
-        for (const child of [...item.children]) {
-            child.style.fontSize = "10px"
+    const items = [...document.getElementsByClassName("item")]
+    const slices = [...document.getElementsByClassName("slice")]
+
+    if (!focused.size) {
+        slices.forEach(s => s.style.opacity = "1")
+        items.forEach(i => {
+            i.style.opacity = "1"
+            i.style.backgroundColor = "white"
+        })
+    } else {
+        for (let i = 0; i < slices.length; i++) {
+            const item = items[i]
+            const slice = slices[i]
+            if (!item.children.item(0).checked) {
+                item.style.opacity = "0.5"
+                slice.style.opacity = "0.5"
+                item.style.backgroundColor = "white"
+            }
         }
     }
 }
 
-render_graph1 = async (category) => {
-    const data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv("../data/netflix.csv")))[category]
+function toggleSelect(genre, logical_update=true) {
+    const id = genre.replace(/\s+/g, "")
+    const relevant = document.getElementsByClassName(id)
+    const checkbox = relevant.item(0).children.item(0)
+    checkbox.checked = !checkbox.checked
+    relevant.item(1).style.opacity = "1"
+    if (logical_update) {
+        if (focused.has(genre)) {
+            focused.delete(genre)
+        } else {
+            focused.add(genre)
+        }
+        ensure_button_focus()
+    }
+}
+
+render_graph1 = async ({ category, focus_action }) => {
+    back.disabled = clear.disabled = select.disabled = true
+
+    if (category) {
+        focused = new Set()
+    }
+
+    _category = category ?? _category
+
+    let data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv("../data/netflix.csv")))[_category]
+
+    if (focus_action) {
+        switch (focus_action) {
+            case "back":
+                focus_index -= 1
+                focused = prev_focused[focus_index] ?? new Set()
+                if (focused.size) {
+                    data = data.filter(d => focused.has(d.genre))
+                }
+                focused = prev_focused[focus_index + 1]
+                select.disabled = focused.size === 0
+                for (const genre of focused) {
+                    toggleSelect(genre, false)
+                }
+                prev_focused = prev_focused.slice(0, focus_index + 1)
+                break
+            case "clear":
+                prev_focused = [null]
+                focus_index = 0
+                focused = new Set()
+        }
+    } else {
+        if (focused.size > 1) {
+            prev_focused.push(new Set(focused))
+            focus_index = prev_focused.length - 1
+            data = data.filter(d => focused.has(d.genre))
+        }
+        focused = new Set()
+    }
+
+    console.log(focused, prev_focused, focus_index)
 
     const pie_data_view = document.getElementById("pie-data")
     pie_data_view.style.height = `${height}px`
@@ -80,20 +158,39 @@ render_graph1 = async (category) => {
         const genre = document.createElement("span")
         const count = document.createElement("span")
 
+        const is_base_case = data.length === 2
+
         genre.style.fontSize = count.style.fontSize = "10px"
-        genre.style.padding = "0 2px 0 2px"
+        genre.style.padding = `0 2px 0 ${is_base_case ? 2 : 5}px`
         genre.style.borderRadius = "2px"
         genre.textContent = `${i + 1}. ${d.genre}`
         count.textContent = d.count
 
-        div.append(genre)
-        div.append(count)
+        if (!is_base_case) {
+            const check = document.createElement("input")
+            check.setAttribute("type", "checkbox")
+            check.style.pointerEvents = "none"
+            check.checked = focused.has(d.genre)
+            check.classList.add("check")
+            div.append(check)
+        }
+
+        const wrapper = document.createElement("div")
+        wrapper.classList.add("wrapper")
+        wrapper.classList.add("cent")
+
+        wrapper.append(genre)
+        wrapper.append(count)
+        wrapper.style.justifyContent = "space-between"
+        wrapper.style.padding = "2px 0 2px 0"
+        div.append(wrapper)
 
         const id = d.genre.replace(/\s+/g, "")
 
         div.classList.add("item")
         div.classList.add(id)
 
+        div.addEventListener("click", () => toggleSelect(d.genre))
         div.addEventListener("mouseenter", () => focus(d.genre, color(d.genre)))
         div.addEventListener("mouseleave", relax)
 
@@ -125,12 +222,26 @@ render_graph1 = async (category) => {
         .style("stroke-width", "1px")
         .on("mouseover", ({data: {genre}}) => focus(genre, color(genre)))
         .on("mouseout", relax)
+        .on("click", ({data: {genre}}) => toggleSelect(genre))
 
-    title.text(`Number of Titles Per Genre [${category}s]`);
+    title.text(`Number of Titles Per Genre [${_category}s]`);
 
     slices.transition().duration(duration)
 
     slices.exit().remove()
+
+    for (const genre of [...focused]) {
+        focus(genre, color(genre))
+    }
+
+    relax()
+    ensure_button_focus()
+}
+
+function ensure_button_focus() {
+    select.disabled = focused.size === 0 || document.getElementsByClassName("item").length === 2
+    back.disabled = prev_focused.length === 1
+    clear.disabled = focused.size === 0 && prev_focused.length === 1
 }
 
 function clean_data(data) {
@@ -165,4 +276,4 @@ function clean_data(data) {
     return partitions
 }
 
-await render_graph1("Movie")
+await render_graph1({ category: "Movie" })

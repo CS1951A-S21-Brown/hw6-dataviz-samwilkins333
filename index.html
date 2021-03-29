@@ -32,12 +32,15 @@
                  style="display: flex;align-items: flex-end;padding: 10px 0 10px 0;border-bottom: 1px solid #00000011">
                 <div class="_row" style="display: flex;width: 100%;">
                     <button style="margin-left: 10px" type="button" class="btn btn-info"
-                            onclick="render_graph1('Movie')">Movies
+                            onclick="render_graph1({ category: 'Movie' })">Movies
                     </button>
                     <button style="margin-left: 10px" type="button" class="btn btn-info"
-                            onclick="render_graph1('TV Show')">TV Shows
+                            onclick="render_graph1({ category: 'TV Show' })">TV Shows
                     </button>
                     <div id="title1" class="wrapper _row cent"></div>
+                    <button id="back-pie" style="margin-right: 10px" class="btn" onclick="render_graph1({ focus_action: 'back' })">Back</button>
+                    <button id="select-pie" style="margin-right: 10px" class="btn" onclick="render_graph1({})">Select</button>
+                    <button id="clear-pie" style="margin-right: 10px" class="btn" onclick="render_graph1({ focus_action: 'clear' })">Clear</button>
                 </div>
             </div>
             <div class="wrapper _row cent">
@@ -119,7 +122,7 @@
     </div>
 </div>
 <script type="text/javascript">
-    let render_graph1, render_graph2, render_graph3, clear_filter
+    let render_graph1, render_graph2, render_graph3, clear_filter, focused
     const MAX_WIDTH = Math.max(1080, window.innerWidth) - 1;
     const MAX_HEIGHT = Math.max(720, window.innerHeight) - 67;
     const BUTTON_HEIGHT = 55
