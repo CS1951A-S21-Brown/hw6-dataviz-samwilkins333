@@ -250,7 +250,9 @@ function clip_data_average_runtime(args, full_data) {
 
     args.init && render_slider({min, max, limit: cap - 1, ordering})
 
-    const data = full_data.sort((a, b) => b.average_runtime - a.average_runtime).slice(low - 1, high)
+    const data = full_data.sort((a, b) => {
+        return (b.average_runtime - a.average_runtime) || (b.release_year - a.release_year)
+    }).slice(low - 1, high)
 
     return {data, title_ordering: "Ranked"}
 }
