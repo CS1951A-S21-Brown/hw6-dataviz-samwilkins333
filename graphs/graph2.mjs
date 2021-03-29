@@ -190,7 +190,7 @@ render_graph2 = async args => {
         .attr("r", 4)
         .style("cursor", "pointer")
 
-    title.text(`Average Movie Runtimes Per Release Year (Sorted By ${title_ordering})`)
+    title.text(`Average Movie Runtimes Per Release Year (${title_ordering})`)
 
     line.exit().remove()
     points.exit().remove()
@@ -229,7 +229,7 @@ function clip_data_release_year(args, full_data) {
 
     data = data.slice(low_index, high_index)
 
-    return { data, title_ordering: "Release Year" }
+    return { data, title_ordering: "Chronological" }
 }
 
 function clip_data_average_runtime(args, full_data) {
@@ -242,7 +242,7 @@ function clip_data_average_runtime(args, full_data) {
 
     const data = full_data.sort((a, b) => b.average_runtime - a.average_runtime).slice(low - 1, high)
 
-    return { data, title_ordering: "Average Runtime" }
+    return { data, title_ordering: "Ranked" }
 }
 
 function show({ release_year, average_runtime, this_y, this_x, ranking }) {

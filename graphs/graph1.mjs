@@ -42,7 +42,6 @@ function focus(id, color) {
     for (const target of [...document.getElementsByClassName(id)]) {
         target.style.backgroundColor = color || "white"
         target.style.opacity = "1"
-        target.style.border = "1px solid black"
         target.scrollIntoView({ behavior: "smooth", block: "end" })
         for (const child of [...target.children]) {
             child.style.fontSize = "14px"
@@ -57,7 +56,6 @@ function relax() {
     for (const item of [...document.getElementsByClassName("item")]) {
         item.style.opacity = "1"
         item.style.backgroundColor = "white"
-        item.style.border = "none"
         for (const child of [...item.children]) {
             child.style.fontSize = "10px"
         }

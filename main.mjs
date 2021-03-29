@@ -1,6 +1,12 @@
 let focus_mode = false
 
-document.addEventListener("keypress", e => e.key === "f" && toggleFocusMode())
+document.addEventListener("keypress", e => {
+    switch (e.key) {
+        case "f":
+            toggleFocusMode()
+            break
+    }
+})
 
 function toggleFocusMode() {
     const toggle = document.getElementById("focus-toggle")
