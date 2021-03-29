@@ -116,7 +116,7 @@ label {
 
 #filter {
     padding: 0 5px 0 5px;
-    margin-right: 10px;
+    margin-left: 10px;
 }
 
 .toggle {
@@ -126,6 +126,10 @@ label {
     outline: none;
 }
 
-#transition {
+#transition, #lang_versions, #repeats {
     margin: 0 5px 0 10px;
+}
+
+label {
+    font-size: 10px;
 }

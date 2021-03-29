@@ -42,23 +42,25 @@
             <div class="wrapper _col cent blurrable">
                 <div class="wrapper cent" style="align-items: flex-end;padding: 10px 0 10px 0;border-bottom: 1px solid #00000011">
                     <div class="_row" style="display: flex;width: 100%;">
-                        <button
-                            class="btn toggle btn-info"
-                            style="margin-left: 10px"
-                            type="button"
-                        >Language Versions Distinct</button>
-                        <button
-                            class="btn toggle btn-info"
-                            style="margin-left: 10px"
-                            type="button"
-                        >Repeats Allowed</button>
-                        <div class="wrapper _row" style="justify-content: flex-end;align-items: center">
+                        <div class="wrapper _row" style="align-items: center">
                             <input
                                 id="filter"
                                 name="filter"
                                 placeholder="Actor or director..."
                             />
                             <label for="filter"></label>
+                        </div>
+                        <div class="wrapper _col" style="align-items: flex-end;justify-content: center;height: 34px;">
+                            <div class="_col" style="display: flex;width: 150px;justify-content: center;margin-right: 10px">
+                                <div style="display: flex;align-items: center">
+                                    <input id="lang_versions" name="lang_versions" type="checkbox">
+                                    <label style="font-weight: normal;" for="lang_versions">Language Versions Unique</label>
+                                </div>
+                                <div style="display: flex;align-items: center">
+                                    <input id="repeats" name="repeats" type="checkbox">
+                                    <label style="font-weight: normal;" for="repeats">Director Allowed As Actor</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
