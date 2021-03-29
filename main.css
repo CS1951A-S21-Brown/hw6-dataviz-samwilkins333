@@ -140,6 +140,8 @@ label {
     margin-left: 10px !important;
     margin-top: -0 !important;
     border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    width: 200px !important;
 }
 
 #clear-filter {
