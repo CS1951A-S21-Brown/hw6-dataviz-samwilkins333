@@ -80,9 +80,7 @@ const subtitle = svg.append("text")
     .style("font-size", 12);
 
 render_graph2 = async args => {
-    svg.selectAll("circle").remove()
-    svg.selectAll("path.area").remove()
-    svg.selectAll("path.line").remove()
+    const transition = document.getElementById('transition').checked
 
     const full_data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv("../data/netflix.csv")))
 
@@ -111,7 +109,11 @@ render_graph2 = async args => {
         show({ release_year, average_runtime, this_y, this_x, ranking })
     }
 
+    if (transition) {
+        y_axis_label.transition().duration(duration)
+    }
     y_axis_label.call(d3.axisLeft(y).tickSize(0).tickPadding(10));
+
     y_axis_label.selectAll("text")
         .style("cursor", "pointer")
         .on("mouseover", release_year => {
@@ -120,8 +122,20 @@ render_graph2 = async args => {
         })
         .on("mouseout", hide)
 
-    svg.append("path")
-        .datum(data)
+    const area = svg.selectAll(".area").data([data], function(d){ return d.average_runtime })
+
+    let temp = area
+        .enter()
+        .append("path")
+        .merge(area)
+
+    if (transition) {
+        temp = temp
+            .transition()
+            .duration(duration)
+    }
+
+    temp
         .attr("fill", "steelblue")
         .attr("fill-opacity", .3)
         .attr("stroke", "none")
@@ -132,21 +146,45 @@ render_graph2 = async args => {
             .y(({ release_year }) => y(release_year) + y_offset)
         )
 
-    svg.append("path")
-        .datum(data)
-        .attr("fill", "none")
-        .attr("stroke", "steelblue")
-        .attr("stroke-width", 2)
+    const line = svg.selectAll(".line").data([data], function(d){ return d.average_runtime })
+
+    temp = line.
+        enter()
+        .append("path")
         .attr("class", "line")
+        .merge(line)
+
+    if (transition) {
+        temp = temp
+            .transition()
+            .duration(duration)
+    }
+
+    temp
         .attr("d", d3.line()
             .x(({ average_runtime }) => x(average_runtime))
             .y(({ release_year }) => y(release_year) + y_offset)
         )
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 2)
 
-    svg.selectAll("circle")
-        .data(data)
+    const points = svg.selectAll("circle").data(data, function(d){ return d.average_runtime })
+
+    temp = points
         .enter()
         .append("circle")
+        .merge(points)
+        .on("mouseover", _show)
+        .on("mouseout", hide)
+
+    if (transition) {
+        temp = temp
+            .transition()
+            .duration(duration)
+    }
+
+    temp
         .attr("fill", "steelblue")
         .attr("stroke", "none")
         .attr("title", ({ average_runtime }) => average_runtime)
@@ -154,11 +192,13 @@ render_graph2 = async args => {
         .attr("cy", ({ release_year }) => y(release_year) + y_offset)
         .attr("r", 4)
         .style("cursor", "pointer")
-        .on("mouseover", _show)
-        .on("mouseout", hide)
 
     title.text(title_text)
     subtitle.text(subtitle_text)
+
+    line.exit().remove()
+    points.exit().remove()
+    area.exit().remove()
 }
 
 function clip_data_release_year(args, full_data) {
@@ -296,5 +336,6 @@ function render_slider({ min, max, limit, ordering }) {
 
 await render_graph2({
     ordering: "release_year",
-    init: true
+    init: true,
+    transition: true
 })

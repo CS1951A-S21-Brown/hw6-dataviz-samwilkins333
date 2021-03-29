@@ -1,7 +1,7 @@
 let cleaned_data = undefined
 
 const width = (MAX_WIDTH / 2),
-      height = MAX_HEIGHT / 2,
+      height = MAX_HEIGHT / 2 - BUTTON_HEIGHT,
       duration = 500
 
 const label_offset = 2,
@@ -31,7 +31,7 @@ svg.append("text")
     .text("Number of Shared Movies");
 
 svg.append("text")
-    .attr("transform", `translate(${-5 * margin.left / 6}, ${(height - margin.top - margin.bottom) / 2}), rotate(-90)`)
+    .attr("transform", `translate(${-10 * margin.left / 11}, ${(height - margin.top - margin.bottom) / 2}), rotate(-90)`)
     .attr("font-size", "12px")
     .style("text-anchor", "middle")
     .text(`(Director, Actor) Pairs`);
@@ -42,11 +42,20 @@ const title = svg.append("text")
     .attr("font-weight", "bold")
     .style("font-size", 15);
 
-render_graph3 = async () => {
+render_graph3 = async ({ allowSelfPairs }) => {
     const cap = 20
 
     let data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv("../data/netflix.csv")))
+
+    if (!allowSelfPairs) {
+        data = data.filter(({ director, actor }) => director !== actor)
+    }
+
     data = data
+        .map(({ director, actor, count }) => ({
+                pair: `${director}, ${actor}`,
+                count
+            }))
         .sort((a, b) => b.count - a.count || a.pair.localeCompare(b.pair))
         .slice(0, cap)
 
@@ -60,7 +69,7 @@ render_graph3 = async () => {
     const buckets = new Set(data.map(({ count }) => count)).size
     const color = d3.scaleOrdinal()
         .domain(data.map(({ count }) => count))
-        .range(d3.quantize(d3.interpolateHcl("#ddd", "#888"), buckets));
+        .range(d3.quantize(d3.interpolateHcl("mediumaquamarine", "aquamarine"), buckets));
 
     bars.enter()
         .append("rect")
@@ -94,33 +103,30 @@ render_graph3 = async () => {
 
 function clean_data(data) {
     const director_actor_pairs = {}
-    for (const { director, cast } of data.filter(({ type }) => type === "Movie")) {
+    for (const { director, cast, title } of data.filter(({ type }) => type === "Movie")) {
         const directors = director.split(", ").filter(d => d.length)
         const actors = cast.split(", ").filter(a => a.length)
         for (const d of directors) {
             for (const a of actors) {
                 const joint = `${d}, ${a}`
-                const existing = director_actor_pairs[joint] ?? 0
-                director_actor_pairs[joint] = existing + 1
+                let existing = director_actor_pairs[joint]
+                if (!existing) {
+                    existing = director_actor_pairs[joint] = new Set()
+                }
+                existing.add(title.replace(/ \(.* Version\)/, ""))
             }
         }
     }
 
     return Object.keys(director_actor_pairs)
         .map(joint => {
-            const count = director_actor_pairs[joint]
             const [d, a] = joint.split(", ")
             return {
                 director: d,
                 actor: a,
-                count
+                count: director_actor_pairs[joint].size
             }
         })
-        .filter(({ director, actor }) => director !== actor)
-        .map(({ director, actor, count }) => ({
-            pair: `${director}, ${actor}`,
-            count
-        }))
 }
 
-await render_graph3()
+await render_graph3({ allowSelfPairs: false })

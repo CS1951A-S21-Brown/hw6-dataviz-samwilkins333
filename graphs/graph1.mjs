@@ -34,14 +34,15 @@ function focus(id, color) {
     id = id.replace(/\s+/g, "")
 
     for (const slice of [...document.getElementsByClassName("slice")]) {
-        slice.style.opacity = "0.2"
+        slice.style.opacity = "0.5"
     }
     for (const item of [...document.getElementsByClassName("item")]) {
-        item.style.opacity = "0.2"
+        item.style.opacity = "0.5"
     }
     for (const target of [...document.getElementsByClassName(id)]) {
         target.style.backgroundColor = color || "white"
         target.style.opacity = "1"
+        target.style.border = "1px solid black"
         target.scrollIntoView({ behavior: "smooth", block: "end" })
         for (const child of [...target.children]) {
             child.style.fontSize = "14px"
@@ -56,6 +57,7 @@ function relax() {
     for (const item of [...document.getElementsByClassName("item")]) {
         item.style.opacity = "1"
         item.style.backgroundColor = "white"
+        item.style.border = "none"
         for (const child of [...item.children]) {
             child.style.fontSize = "10px"
         }
@@ -122,7 +124,7 @@ render_graph1 = async (category) => {
         .attr("stroke", "white")
         .attr("class", ({ data }) => `slice ${data.genre.replace(/\s+/g, "")}`)
         .style("cursor", "pointer")
-        .style("stroke-width", "2px")
+        .style("stroke-width", "1px")
         .on("mouseover", ({ data: { genre } }) => focus(genre, color(genre)))
         .on("mouseout", relax)
 
