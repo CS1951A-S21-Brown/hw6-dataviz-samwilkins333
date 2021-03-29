@@ -46,11 +46,11 @@ filter.addEventListener("keypress", e => {
     }
 })
 
-clear_filter = async (focus=true) => {
+clear_filter = async (focus = true) => {
     filter.value = ""
     _override = undefined
     focus && filter.focus()
-    return render_graph3()
+    await render_graph3()
 }
 
 const x = d3.scaleLinear()

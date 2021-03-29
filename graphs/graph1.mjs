@@ -1,11 +1,11 @@
 let cleaned_data = undefined
 
 const width = MAX_WIDTH / 2,
-      height = MAX_HEIGHT / 2 - BUTTON_HEIGHT - 1,
-      duration = 500
+    height = MAX_HEIGHT / 2 - BUTTON_HEIGHT - 1,
+    duration = 500
 
 const padding = 10,
-      mar = 40;
+    mar = 40;
 
 const svg = d3.select("#graph1")
     .append("svg")
@@ -42,7 +42,7 @@ function focus(id, color) {
     for (const target of [...document.getElementsByClassName(id)]) {
         target.style.backgroundColor = color || "white"
         target.style.opacity = "1"
-        target.scrollIntoView({ behavior: "smooth", block: "end" })
+        target.scrollIntoView({behavior: "smooth", block: "end"})
         for (const child of [...target.children]) {
             child.style.fontSize = "14px"
         }
@@ -72,7 +72,7 @@ render_graph1 = async (category) => {
     labels_list.innerHTML = ""
 
     const color = d3.scaleOrdinal()
-        .domain(data.map(({ genre }) => genre))
+        .domain(data.map(({genre}) => genre))
         .range(d3.quantize(d3.interpolateHcl("#ffcc33", "lightsteelblue"), data.length));
 
     data.forEach((d, i) => {
@@ -103,13 +103,13 @@ render_graph1 = async (category) => {
     const radius = (Math.min(width, height) + mar) / 2
 
     const data_ready = d3.pie()
-        .sort(({ count }) => count)
-        .value(({ count }) => count)(data)
+        .sort(({count}) => count)
+        .value(({count}) => count)(data)
 
     // noinspection JSCheckFunctionSignatures
     const arc = d3.arc()
-      .innerRadius(radius * 0.5)
-      .outerRadius(radius * 0.8)
+        .innerRadius(radius * 0.5)
+        .outerRadius(radius * 0.8)
 
     const slices = svg.selectAll('path').data(data_ready)
 
@@ -118,12 +118,12 @@ render_graph1 = async (category) => {
         .append('path')
         .merge(slices)
         .attr('d', arc)
-        .attr('fill', ({ data }) => color(data.genre))
+        .attr('fill', ({data}) => color(data.genre))
         .attr("stroke", "white")
-        .attr("class", ({ data }) => `slice ${data.genre.replace(/\s+/g, "")}`)
+        .attr("class", ({data}) => `slice ${data.genre.replace(/\s+/g, "")}`)
         .style("cursor", "pointer")
         .style("stroke-width", "1px")
-        .on("mouseover", ({ data: { genre } }) => focus(genre, color(genre)))
+        .on("mouseover", ({data: {genre}}) => focus(genre, color(genre)))
         .on("mouseout", relax)
 
     title.text(`Number of Titles Per Genre [${category}s]`);
@@ -136,25 +136,25 @@ render_graph1 = async (category) => {
 function clean_data(data) {
     const genre_count_mapper = {}
 
-    for (const { listed_in, type } of data) {
+    for (const {listed_in, type} of data) {
         for (const genre of listed_in.split(", ")) {
-            (genre_count_mapper[genre] = genre_count_mapper[genre] ?? { "Movie": 0, "TV Show": 0 })[type]++
+            (genre_count_mapper[genre] = genre_count_mapper[genre] ?? {"Movie": 0, "TV Show": 0})[type]++
         }
     }
 
-    const aggregated = Object.keys(genre_count_mapper).map(genre => ({ genre, count: genre_count_mapper[genre] }))
+    const aggregated = Object.keys(genre_count_mapper).map(genre => ({genre, count: genre_count_mapper[genre]}))
 
-    const partitions = { "Movie": [], "TV Show": [] }
-    for (const { genre, count } of aggregated) {
+    const partitions = {"Movie": [], "TV Show": []}
+    for (const {genre, count} of aggregated) {
         const title_test = /tv|show|series/ig.test(genre)
         const movie_count = count["Movie"]
         const tv_count = count["TV Show"]
         if (tv_count) {
             console.assert(!movie_count && title_test)
-            partitions["TV Show"].push({ genre, count: tv_count })
+            partitions["TV Show"].push({genre, count: tv_count})
         } else {
             console.assert(!tv_count && !title_test)
-            partitions["Movie"].push({ genre, count: movie_count })
+            partitions["Movie"].push({genre, count: movie_count})
         }
     }
 

@@ -3,8 +3,8 @@ let ordering = undefined
 let range = undefined
 
 const width = (MAX_WIDTH / 2),
-      height = MAX_HEIGHT - BUTTON_HEIGHT,
-      duration = 500
+    height = MAX_HEIGHT - BUTTON_HEIGHT,
+    duration = 500
 
 const cap = 50
 const padding = 10;
@@ -84,25 +84,25 @@ render_graph2 = async args => {
         range = undefined
     }
 
-    let min = d3.min(full_data, ({ average_runtime }) => average_runtime)
-    let max = d3.max(full_data, ({ average_runtime }) => average_runtime)
+    let min = d3.min(full_data, ({average_runtime}) => average_runtime)
+    let max = d3.max(full_data, ({average_runtime}) => average_runtime)
     x.domain([min, max]);
 
     const ranked_data = [...full_data].sort((a, b) => b.average_runtime - a.average_runtime)
 
-    const { data, title_ordering } = ordering_to_clipper[ordering = args.ordering || ordering](args, full_data)
+    const {data, title_ordering} = ordering_to_clipper[ordering = args.ordering || ordering](args, full_data)
 
-    y.domain(data.map(({ release_year }) => release_year));
+    y.domain(data.map(({release_year}) => release_year));
 
     const y_offset = y.bandwidth() / 2
 
     x_axis_label.call(d3.axisBottom(x))
 
-    const _show = ({ release_year, average_runtime }) => {
+    const _show = ({release_year, average_runtime}) => {
         const this_y = y(release_year) + y_offset
         const this_x = x(average_runtime)
         const ranking = ranked_data.findIndex(d => d.average_runtime === average_runtime) + 1
-        show({ release_year, average_runtime, this_y, this_x, ranking })
+        show({release_year, average_runtime, this_y, this_x, ranking})
     }
 
     let temp = y_axis_label
@@ -114,12 +114,14 @@ render_graph2 = async args => {
     y_axis_label.selectAll("text")
         .style("cursor", "pointer")
         .on("mouseover", release_year => {
-            const { average_runtime } = data.find(d => d.release_year === release_year)
-            _show({ release_year, average_runtime })
+            const {average_runtime} = data.find(d => d.release_year === release_year)
+            _show({release_year, average_runtime})
         })
         .on("mouseout", hide)
 
-    const area = svg.selectAll(".area").data([data], function(d){ return d.average_runtime })
+    const area = svg.selectAll(".area").data([data], function (d) {
+        return d.average_runtime
+    })
 
     temp = area
         .enter()
@@ -139,14 +141,15 @@ render_graph2 = async args => {
         .attr("class", "area")
         .attr("d", d3.area()
             .x0(0)
-            .x1(({ average_runtime }) => x(average_runtime))
-            .y(({ release_year }) => y(release_year) + y_offset)
+            .x1(({average_runtime}) => x(average_runtime))
+            .y(({release_year}) => y(release_year) + y_offset)
         )
 
-    const line = svg.selectAll(".line").data([data], function(d){ return d.average_runtime })
+    const line = svg.selectAll(".line").data([data], function (d) {
+        return d.average_runtime
+    })
 
-    temp = line.
-        enter()
+    temp = line.enter()
         .append("path")
         .attr("class", "line")
         .merge(line)
@@ -159,14 +162,16 @@ render_graph2 = async args => {
 
     temp
         .attr("d", d3.line()
-            .x(({ average_runtime }) => x(average_runtime))
-            .y(({ release_year }) => y(release_year) + y_offset)
+            .x(({average_runtime}) => x(average_runtime))
+            .y(({release_year}) => y(release_year) + y_offset)
         )
         .attr("fill", "none")
         .attr("stroke", "steelblue")
         .attr("stroke-width", 2)
 
-    const points = svg.selectAll("circle").data(data, function(d){ return d.average_runtime })
+    const points = svg.selectAll("circle").data(data, function (d) {
+        return d.average_runtime
+    })
 
     temp = points
         .enter()
@@ -184,9 +189,9 @@ render_graph2 = async args => {
     temp
         .attr("fill", "steelblue")
         .attr("stroke", "none")
-        .attr("title", ({ average_runtime }) => average_runtime)
-        .attr("cx", ({ average_runtime }) => x(average_runtime))
-        .attr("cy", ({ release_year }) => y(release_year) + y_offset)
+        .attr("title", ({average_runtime}) => average_runtime)
+        .attr("cx", ({average_runtime}) => x(average_runtime))
+        .attr("cy", ({release_year}) => y(release_year) + y_offset)
         .attr("r", 4)
         .style("cursor", "pointer")
 
@@ -198,12 +203,12 @@ render_graph2 = async args => {
 }
 
 function clip_data_release_year(args, full_data) {
-    const min = d3.min(full_data, ({ release_year }) => release_year)
-    const max = d3.max(full_data, ({ release_year }) => release_year)
+    const min = d3.min(full_data, ({release_year}) => release_year)
+    const max = d3.max(full_data, ({release_year}) => release_year)
 
     const [low, high] = range = (args.range || range || [max - (cap - 1), max])
 
-    args.init && render_slider({ min, max, limit: cap - 1, ordering })
+    args.init && render_slider({min, max, limit: cap - 1, ordering})
 
     let data = full_data.sort((a, b) => b.release_year - a.release_year)
 
@@ -217,7 +222,7 @@ function clip_data_release_year(args, full_data) {
 
     let high_index = 50
     for (let i = low_index; i < data.length; i++) {
-        const { release_year } = data[i]
+        const {release_year} = data[i]
         if (release_year === low) {
             high_index = i + 1
             break
@@ -229,7 +234,7 @@ function clip_data_release_year(args, full_data) {
 
     data = data.slice(low_index, high_index)
 
-    return { data, title_ordering: "Chronological" }
+    return {data, title_ordering: "Chronological"}
 }
 
 function clip_data_average_runtime(args, full_data) {
@@ -238,14 +243,14 @@ function clip_data_average_runtime(args, full_data) {
 
     const [low, high] = range = (args.range || range || [min, cap])
 
-    args.init && render_slider({ min, max, limit: cap - 1, ordering })
+    args.init && render_slider({min, max, limit: cap - 1, ordering})
 
     const data = full_data.sort((a, b) => b.average_runtime - a.average_runtime).slice(low - 1, high)
 
-    return { data, title_ordering: "Ranked" }
+    return {data, title_ordering: "Ranked"}
 }
 
-function show({ release_year, average_runtime, this_y, this_x, ranking }) {
+function show({release_year, average_runtime, this_y, this_x, ranking}) {
     horizontal_connector.transition().duration(duration).style("opacity", .9);
     horizontal_connector.attr("d", `M 0 ${this_y} H ${this_x}`)
 
@@ -269,15 +274,15 @@ function hide() {
 
 function clean_data(data) {
     data = data
-            .filter(({ type }) => type === "Movie")
-            .map(({ duration, release_year }) => ({
-                minutes: +duration.split(" ")[0],
-                release_year: +release_year
-            }))
+        .filter(({type}) => type === "Movie")
+        .map(({duration, release_year}) => ({
+            minutes: +duration.split(" ")[0],
+            release_year: +release_year
+        }))
 
     const release_year_mapper = {}
 
-    for (const { minutes, release_year } of data) {
+    for (const {minutes, release_year} of data) {
         const existing = (release_year_mapper[release_year] ?? [])
         existing.push(minutes)
         release_year_mapper[release_year] = existing
@@ -292,13 +297,13 @@ function clean_data(data) {
         }
     })
 
-    const years = new Set(present.map(({ release_year }) => release_year))
+    const years = new Set(present.map(({release_year}) => release_year))
     const min = Math.min(...years)
     const max = Math.max(...years)
 
     for (let year = min + 1; year < max; year++) {
         if (!years.has(year)) {
-            present.push({ release_year: year, average_runtime: 0 })
+            present.push({release_year: year, average_runtime: 0})
         }
     }
 
@@ -307,13 +312,13 @@ function clean_data(data) {
 
 const slider = document.getElementById('slider');
 
-function render_slider({ min, max, limit, ordering }) {
+function render_slider({min, max, limit, ordering}) {
     slider.noUiSlider?.destroy()
 
     slider.style.height = `${height - large_margin.bottom - large_margin.top - 22}px`
 
     noUiSlider.create(slider, {
-        range: { min, max },
+        range: {min, max},
         start: ordering === "release_year" ? [max - limit, max] : [min, limit + 1],
         margin: 9,
         limit,
@@ -322,7 +327,7 @@ function render_slider({ min, max, limit, ordering }) {
         orientation: 'vertical',
         behaviour: 'tap-drag',
         tooltips: true,
-        format: wNumb({ decimals: 0 }),
+        format: wNumb({decimals: 0}),
         pips: {
             mode: 'steps',
             stepped: true,
@@ -330,7 +335,7 @@ function render_slider({ min, max, limit, ordering }) {
         }
     });
 
-    slider.noUiSlider.on("change", ([start, end]) => render_graph2({ range: [+start, +end]}))
+    slider.noUiSlider.on("change", ([start, end]) => render_graph2({range: [+start, +end]}))
 
 }
 

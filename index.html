@@ -2,121 +2,133 @@
 <!--suppress JSUnresolvedLibraryURL -->
 <html lang="en">
 <head>
-        <meta charset="utf-8">
-        <title>Assignment 6 &laquo; Data Visualization Dashboard&raquo;</title>
-        <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
-        <link rel="stylesheet" href="main.css"/>
-        <link rel="stylesheet" href="nouislider/nouislider.css"/>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@8.3.2/dist/css/autoComplete.min.css">
-        <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
-        <script type="text/javascript" src="nouislider/nouislider.js"></script>
-        <script type="text/javascript" src="nouislider/wNumb.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@8.3.2/dist/js/autoComplete.min.js"></script>
-    </head>
+    <meta charset="utf-8">
+    <title>Assignment 6 &laquo; Data Visualization Dashboard&raquo;</title>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="main.css"/>
+    <link rel="stylesheet" href="nouislider/nouislider.css"/>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@8.3.2/dist/css/autoComplete.min.css">
+    <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+    <script type="text/javascript" src="nouislider/nouislider.js"></script>
+    <script type="text/javascript" src="nouislider/wNumb.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@8.3.2/dist/js/autoComplete.min.js"></script>
+</head>
 <body>
-    <div class="header">
-        <h3>Assignment 6 &laquo; Data Visualization Dashboard &raquo;</h3>
-        <img
+<div class="header">
+    <h3>Assignment 6 &laquo; Data Visualization Dashboard &raquo;</h3>
+    <img
             id="focus-toggle"
             src="icons/focus.png"
             alt="Enable Focus Mode"
             title="Enable Focus Mode"
             onclick="toggleFocusMode()"
-        />
-    </div>
-    <div id="container" class="wrapper cent">
-        <div class="wrapper _col cent">
-            <div class="wrapper _col cent blurrable" style="border-bottom: 1px dashed black;">
-                <div class="wrapper _row" style="display: flex;align-items: flex-end;padding: 10px 0 10px 0;border-bottom: 1px solid #00000011">
-                    <div class="_row" style="display: flex;width: 100%;">
-                        <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph1('Movie')">Movies</button>
-                        <button style="margin-left: 10px" type="button" class="btn btn-info" onclick="render_graph1('TV Show')">TV Shows</button>
-                        <div id="title1" class="wrapper _row cent"></div>
-                    </div>
-                </div>
-                <div class="wrapper _row cent">
-                    <div id="pie-data" class="wrapper _row">
-                        <div id="labels-list" class="wrapper _col"></div>
-                    </div>
-                    <div id="graph1" style="display: flex" class="cent"></div>
+    />
+</div>
+<div id="container" class="wrapper cent">
+    <div class="wrapper _col cent">
+        <div class="wrapper _col cent blurrable" style="border-bottom: 1px dashed black;">
+            <div class="wrapper _row"
+                 style="display: flex;align-items: flex-end;padding: 10px 0 10px 0;border-bottom: 1px solid #00000011">
+                <div class="_row" style="display: flex;width: 100%;">
+                    <button style="margin-left: 10px" type="button" class="btn btn-info"
+                            onclick="render_graph1('Movie')">Movies
+                    </button>
+                    <button style="margin-left: 10px" type="button" class="btn btn-info"
+                            onclick="render_graph1('TV Show')">TV Shows
+                    </button>
+                    <div id="title1" class="wrapper _row cent"></div>
                 </div>
             </div>
-            <div class="wrapper _col cent blurrable">
-                <div class="wrapper cent" style="align-items: flex-end;padding: 10px 0 10px 0;border-bottom: 1px solid #00000011">
-                    <div class="_row" style="display: flex;width: 100%;">
-                        <div class="autoComplete_wrapper">
-                            <input
+            <div class="wrapper _row cent">
+                <div id="pie-data" class="wrapper _row">
+                    <div id="labels-list" class="wrapper _col"></div>
+                </div>
+                <div id="graph1" style="display: flex" class="cent"></div>
+            </div>
+        </div>
+        <div class="wrapper _col cent blurrable">
+            <div class="wrapper cent"
+                 style="align-items: flex-end;padding: 10px 0 10px 0;border-bottom: 1px solid #00000011">
+                <div class="_row" style="display: flex;width: 100%;">
+                    <div class="autoComplete_wrapper">
+                        <input
                                 id="filter"
                                 name="filter"
-                            />
-                            <label for="filter"></label>
-                            <img
+                        />
+                        <label for="filter"></label>
+                        <img
                                 id="clear-filter"
                                 src="icons/clear.png"
                                 alt="Clear Search Filter"
                                 title="Clear Search Filter"
                                 onclick="clear_filter()"
-                            />
-                        </div>
-                        <div class="wrapper _col" style="align-items: flex-end;justify-content: center;height: 34px;">
-                            <div class="_col" style="display: flex;width: 150px;justify-content: center;margin-right: 10px">
-                                <div style="display: flex;align-items: center">
-                                    <input id="lang_versions" name="lang_versions" type="checkbox" onchange="render_graph3()">
-                                    <label style="font-weight: normal;" for="lang_versions">Language Versions Unique</label>
-                                </div>
-                                <div style="display: flex;align-items: center">
-                                    <input id="repeats" name="repeats" type="checkbox" onchange="render_graph3()">
-                                    <label style="font-weight: normal;" for="repeats">Director Allowed As Actor</label>
-                                </div>
+                        />
+                    </div>
+                    <div class="wrapper _col" style="align-items: flex-end;justify-content: center;height: 34px;">
+                        <div class="_col" style="display: flex;width: 150px;justify-content: center;margin-right: 10px">
+                            <div style="display: flex;align-items: center">
+                                <input id="lang_versions" name="lang_versions" type="checkbox"
+                                       onchange="render_graph3()">
+                                <label style="font-weight: normal;" for="lang_versions">Language Versions Unique</label>
+                            </div>
+                            <div style="display: flex;align-items: center">
+                                <input id="repeats" name="repeats" type="checkbox" onchange="render_graph3()">
+                                <label style="font-weight: normal;" for="repeats">Director Allowed As Actor</label>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div id="graph3" class="wrapper _col cent"></div>
             </div>
+            <div id="graph3" class="wrapper _col cent"></div>
         </div>
-        <div class="wrapper _col cent blurrable" style="border-left: 1px dashed black">
-            <div class="wrapper cent" style="align-items: flex-end;padding: 10px 0 10px 0;border-bottom: 1px solid #00000011">
-                <div class="wrapper _row" style="align-items: center">
-                    <button
-                            style="margin-left: 10px"
-                            type="button"
-                            class="btn btn-info"
-                            onclick="render_graph2({
+    </div>
+    <div class="wrapper _col cent blurrable" style="border-left: 1px dashed black">
+        <div class="wrapper cent"
+             style="align-items: flex-end;padding: 10px 0 10px 0;border-bottom: 1px solid #00000011">
+            <div class="wrapper _row" style="align-items: center">
+                <button
+                        style="margin-left: 10px"
+                        type="button"
+                        class="btn btn-info"
+                        onclick="render_graph2({
                                 ordering: 'release_year',
                                 init: true,
                             })"
-                    >Release Year</button>
-                    <button
-                            style="margin-left: 10px"
-                            type="button"
-                            class="btn btn-info"
-                            onclick="render_graph2({
+                >Release Year
+                </button>
+                <button
+                        style="margin-left: 10px"
+                        type="button"
+                        class="btn btn-info"
+                        onclick="render_graph2({
                                 ordering: 'average_runtime',
                                 init: true,
                             })"
-                    >Average Runtime</button>
-                    <div class="wrapper" style="align-items: center;height: 34px;justify-content: flex-end;padding-right: 10px;">
-                        <input id="transition" name="transition" type="checkbox">
-                        <label style="font-weight: normal;" for="transition">Transition</label>
-                    </div>
+                >Average Runtime
+                </button>
+                <div class="wrapper"
+                     style="align-items: center;height: 34px;justify-content: flex-end;padding-right: 10px;">
+                    <input id="transition" name="transition" type="checkbox">
+                    <label style="font-weight: normal;" for="transition">Transition</label>
                 </div>
             </div>
-            <div id="graph2" class="wrapper cent"></div>
-            <div id="slider"></div>
         </div>
+        <div id="graph2" class="wrapper cent"></div>
+        <div id="slider"></div>
     </div>
-    <script type="text/javascript">
-        let render_graph1, render_graph2, render_graph3, clear_filter
-        const MAX_WIDTH = Math.max(1080, window.innerWidth) - 1;
-        const MAX_HEIGHT = Math.max(720, window.innerHeight) - 67;
-        const BUTTON_HEIGHT = 55
-        const margin = { top: 40, right: 50, bottom: 40, left: 230 };
-        const large_margin = { top: 40, right: 175, bottom: 60, left: 80 };
-    </script>
-    <script type="text/javascript" src="main.mjs"></script>
-    <script type="module" src="graphs/graph1.mjs"></script>
-    <script type="module" src="graphs/graph2.mjs"></script>
-    <script type="module" src="graphs/graph3.mjs"></script>
+</div>
+<script type="text/javascript">
+    let render_graph1, render_graph2, render_graph3, clear_filter
+    const MAX_WIDTH = Math.max(1080, window.innerWidth) - 1;
+    const MAX_HEIGHT = Math.max(720, window.innerHeight) - 67;
+    const BUTTON_HEIGHT = 55
+    const margin = {top: 40, right: 50, bottom: 40, left: 230};
+    const large_margin = {top: 40, right: 175, bottom: 60, left: 80};
+</script>
+<script type="text/javascript" src="main.mjs"></script>
+<script type="module" src="graphs/graph1.mjs"></script>
+<script type="module" src="graphs/graph2.mjs"></script>
+<script type="module" src="graphs/graph3.mjs"></script>
 </body>
 </html>
