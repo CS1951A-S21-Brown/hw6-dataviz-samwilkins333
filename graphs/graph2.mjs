@@ -34,7 +34,7 @@ const countRef = svg.append("g");
 const y_axis_label = svg.append("g");
 const x_axis_label = svg.append("g");
 
-x_axis_label.attr("transform", `translate(0, ${height - 120})`)
+x_axis_label.attr("transform", `translate(0, ${height - 100})`)
 
 const tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
@@ -71,13 +71,9 @@ svg.append("text")
     .text(`Release Years`);
 
 const title = svg.append("text")
-    .attr("transform", `translate(0, -32)`)
+    .attr("transform", `translate(0, -14)`)
     .attr("font-weight", "bold")
     .style("font-size", 15);
-
-const subtitle = svg.append("text")
-    .attr("transform", `translate(0, -14)`)
-    .style("font-size", 12);
 
 render_graph2 = async args => {
     const transition = document.getElementById('transition').checked
@@ -94,7 +90,7 @@ render_graph2 = async args => {
 
     const ranked_data = [...full_data].sort((a, b) => b.average_runtime - a.average_runtime)
 
-    const { data, title_text, subtitle_text } = ordering_to_clipper[ordering = args.ordering || ordering](args, full_data)
+    const { data, title_ordering } = ordering_to_clipper[ordering = args.ordering || ordering](args, full_data)
 
     y.domain(data.map(({ release_year }) => release_year));
 
@@ -194,8 +190,7 @@ render_graph2 = async args => {
         .attr("r", 4)
         .style("cursor", "pointer")
 
-    title.text(title_text)
-    subtitle.text(subtitle_text)
+    title.text(`Average Movie Runtimes Per Release Year (Sorted By ${title_ordering})`)
 
     line.exit().remove()
     points.exit().remove()
@@ -234,11 +229,7 @@ function clip_data_release_year(args, full_data) {
 
     data = data.slice(low_index, high_index)
 
-    return {
-        data,
-        title_text: `${full_data.length} Sequential Release Years' Average Movie Runtimes`,
-        subtitle_text: `(${low} - ${high}) ${high - low + 1} years, ${data.length} samples`
-    }
+    return { data, title_ordering: "Release Year" }
 }
 
 function clip_data_average_runtime(args, full_data) {
@@ -251,11 +242,7 @@ function clip_data_average_runtime(args, full_data) {
 
     const data = full_data.sort((a, b) => b.average_runtime - a.average_runtime).slice(low - 1, high)
 
-    return {
-        data,
-        title_text: `${full_data.length} Release Years Ranked By Average Movie Runtime`,
-        subtitle_text: `(${low} - ${high}) ${data.length} samples`
-    }
+    return { data, title_ordering: "Average Runtime" }
 }
 
 function show({ release_year, average_runtime, this_y, this_x, ranking }) {
