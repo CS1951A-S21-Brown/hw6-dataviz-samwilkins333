@@ -12,11 +12,11 @@ const padding = 10,
 
 const svg = d3.select("#graph1")
     .append("svg")
-    .attr("width", height)
+    .attr("width", height + mar)
     .attr("height", height)
     .style("border-left", "1px solid #00000011")
     .append("g")
-    .attr("transform", `translate(${height / 2}, ${height / 2 + 10})`);
+    .attr("transform", `translate(${(height + mar) / 2}, ${height / 2 + 10})`);
 
 const { x: offset_x, y: offset_y } = document.getElementById("graph1").getBoundingClientRect()
 
@@ -197,7 +197,7 @@ render_graph1 = async ({category, focus_action}) => {
         labels_list.append(div)
     })
 
-    const radius = (Math.min(width, height - 20) + mar) / 2
+    const radius = (Math.min(width, height - 40) + mar) / 2
 
     const data_ready = d3.pie()
         .sort(({count}) => count)
