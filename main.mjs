@@ -12,7 +12,7 @@ let _contents = {}
 let _text = {
     graph1_wrapper: [
         "This interactive donut graph allows exploration and comparison of the number of titles within each set of mutually exclusive genres (either among movies or television shows). Hover over a slice to view its genre name and title count.",
-        "To explore a specific subset of genres, select (1 < number < total_visible) genres by clicking on either the slice or the list element and press 'Apply' to view just those genres in a smaller subgraph. The smallest subgraph may contain two genres, but no fewer. With this setup, one can either view global relationships among all genres, or focus in on comparing particular genres of interest. This is particularly helpful when comparing genres with small global slices.",
+        "To explore a specific subset of genres, select (1 < number < total_visible) genres by clicking on either the slice or the list element and press 'Apply' to view just those genres in a smaller subgraph. In a subgraph, genre slices' colors are not reinterpolated: rather, original global colors are transferred to preserve global scale information. The smallest subgraph may contain two genres, but no fewer. With this setup, one can either view global relationships among all genres, or focus in on comparing particular genres of interest. This is particularly helpful when comparing genres with small global slices.",
         "'Back' returns to the previous selection. 'Clear' resets all state. Switching between movies and television shows resets all state."
     ],
     graph2_wrapper: [
@@ -27,12 +27,22 @@ let _text = {
         "In some cases, a single individual is both a director and an actor in a movie, resulting in a pair with the same name. These are disallowed by default, but can be displayed by checking 'Director Allowed As Actor'. Likewise, there are instances where the same movie is released in different languages. By default, these versions are collapsed and collectively contribute 1 to the shared movie counts, but they can each be treated as unique movies by checking 'Language Versions Unique'.",
         "The title will indicate whether all relevant pairs are being shown. If there are more than can be displayed, the total is included. For both the title and axes, if a filter is applied, the name will appear in the appropriate slot, either 'Actor' or 'Director'.",
         "With this setup, you can explore relationships between directors and actors, and expand your search by observing and then filtering names that appear in association with previous queries."
+    ],
+    container: [
+        "Strengths and weaknesses of D3",
+        "✅ The fact that D3 is data-bound has been exceedingly helpful. Once a pipeline is finalized, it became very straightforward to manipulate data in code and, after re-rendering, see the visuals fall into place. This was extremely useful when designing reactions to user input.",
+        "✅ Likewise, the common APIs and concepts between graphs that are very visually distinct is empowering. While there were particular functions and routines unique to each graph type, the general approaches all followed the same blueprint even though the visuals differ substantially.",
+        "✅ Finally, the fact that D3 is functional (in that one defines a template function for attributes to be applied elementwise at runtime) helped code conciseness, and the fact that it exposes wrappers around more complicated SVG path routines like arcs and areas made the donut graph design practically feasible.",
+        "❌ D3",
+        "❌ D3",
+        "❌ D3"
     ]
 }
 let _heights = {
     graph1_wrapper: `${MAX_HEIGHT / 2 - BUTTON_HEIGHT - 1}px`,
     graph2_wrapper: `${MAX_HEIGHT - BUTTON_HEIGHT}px`,
-    graph3_wrapper: `${MAX_HEIGHT / 2 - BUTTON_HEIGHT}px`
+    graph3_wrapper: `${MAX_HEIGHT / 2 - BUTTON_HEIGHT}px`,
+    container: `${MAX_HEIGHT}px`
 }
 
 function toggleInfo(contentsId) {

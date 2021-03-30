@@ -119,6 +119,10 @@ render_graph1 = async ({category, focus_action}) => {
 
     let data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv(DATA_PATH)))[_category]
 
+    const color = d3.scaleOrdinal()
+        .domain(data.map(({genre}) => genre))
+        .range(d3.quantize(d3.interpolateHcl("#ffcc33", "lightsteelblue"), data.length));
+
     if (focus_action) {
         switch (focus_action) {
             case "back":
@@ -152,10 +156,6 @@ render_graph1 = async ({category, focus_action}) => {
 
     const labels_list = document.getElementById("labels-list")
     labels_list.innerHTML = ""
-
-    const color = d3.scaleOrdinal()
-        .domain(data.map(({genre}) => genre))
-        .range(d3.quantize(d3.interpolateHcl("#ffcc33", "lightsteelblue"), data.length));
 
     data.forEach((d, i) => {
         const div = document.createElement("div")
