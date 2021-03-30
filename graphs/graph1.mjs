@@ -16,7 +16,7 @@ const svg = d3.select("#graph1")
     .attr("height", height)
     .style("border-left", "1px solid #00000011")
     .append("g")
-    .attr("transform", `translate(${height / 2}, ${height / 2})`);
+    .attr("transform", `translate(${height / 2}, ${height / 2 + 10})`);
 
 const { x: offset_x, y: offset_y } = document.getElementById("graph1").getBoundingClientRect()
 
@@ -36,13 +36,9 @@ const show = document.getElementById("show")
 
 const countRef = svg.append("g");
 
-const title = d3
-    .select("#title1")
-    .append("svg")
-    .attr("width", "300")
-    .attr("height", "34")
+const title = svg
     .append("text")
-    .attr("transform", `translate(140, 22)`)
+    .attr("transform", `translate(0, -${(height - 28) / 2})`)
     .style("font-weight", "bold")
     .style("font-size", 15)
     .style("text-anchor", "middle")
@@ -201,7 +197,7 @@ render_graph1 = async ({category, focus_action}) => {
         labels_list.append(div)
     })
 
-    const radius = (Math.min(width, height) + mar) / 2
+    const radius = (Math.min(width, height - 20) + mar) / 2
 
     const data_ready = d3.pie()
         .sort(({count}) => count)

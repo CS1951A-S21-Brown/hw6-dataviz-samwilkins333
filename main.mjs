@@ -30,7 +30,7 @@ let _text = {
     ],
     container: [
         ["[1.] Dashboard Description", { fontWeight: "bold" }],
-        "See individual graph information panels. Note that the icon in the right of the header toggles focus mode, in which only the graph panel with focus has full opacity. This can also be toggled with each press of the 'f' key.",
+        "See individual graph information panels. Note that the icon in the right of the header toggles focus mode, in which only the graph panel with mouse focus has full opacity. This can also be toggled with each press of the 'f' key.",
         ["[2. & 3.] Strengths and Weaknesses of D3", { fontWeight: "bold" }],
         "✅ The fact that D3 is data-bound has been exceedingly helpful. Once a pipeline is finalized, it became very straightforward to manipulate data in code and, after re-rendering, see the visuals fall into place. This was extremely useful when designing reactions to user input.",
         "✅ Likewise, the common APIs and concepts between graphs that are very visually distinct is empowering. While there were particular functions and routines unique to each graph type, the general approaches all followed the same blueprint even though the visuals differ substantially.",
@@ -55,6 +55,8 @@ function toggleInfo(contentsId, toggleId) {
 
     if (contents.classList.contains("info_active")) {
         toggle.src = "icons/info.png"
+        toggle.alt = toggle.title = "More Information"
+
         contents.classList.remove("info_active")
 
         contents.innerHTML = ""
@@ -64,6 +66,8 @@ function toggleInfo(contentsId, toggleId) {
         }
     } else {
         toggle.src = "icons/clear.png"
+        toggle.alt = toggle.title = "Less Information"
+
         contents.classList.add("info_active")
         _contents[contentsId] = [...contents.children]
 
