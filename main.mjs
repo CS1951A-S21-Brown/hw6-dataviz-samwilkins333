@@ -29,13 +29,17 @@ let _text = {
         "With this setup, you can explore relationships between directors and actors, and expand your search by observing and then filtering names that appear in association with previous queries."
     ],
     container: [
-        "Strengths and weaknesses of D3",
+        ["[1.] Dashboard Description", { fontWeight: "bold" }],
+        "See individual graph information panels. Note that the icon in the right of the header toggles focus mode, in which only the graph panel with focus has full opacity. This can also be toggled with each press of the 'f' key.",
+        ["[2. & 3.] Strengths and Weaknesses of D3", { fontWeight: "bold" }],
         "✅ The fact that D3 is data-bound has been exceedingly helpful. Once a pipeline is finalized, it became very straightforward to manipulate data in code and, after re-rendering, see the visuals fall into place. This was extremely useful when designing reactions to user input.",
         "✅ Likewise, the common APIs and concepts between graphs that are very visually distinct is empowering. While there were particular functions and routines unique to each graph type, the general approaches all followed the same blueprint even though the visuals differ substantially.",
-        "✅ Finally, the fact that D3 is functional (in that one defines a template function for attributes to be applied elementwise at runtime) helped code conciseness, and the fact that it exposes wrappers around more complicated SVG path routines like arcs and areas made the donut graph design practically feasible.",
-        "❌ D3",
-        "❌ D3",
-        "❌ D3"
+        "✅ Finally, the fact that D3 is functional (in that one defines a template function for attributes to be applied elementwise at runtime) helped code conciseness, and the fact that it exposes wrappers around transitions, color interpolation and more complicated SVG path routines like arcs and areas made involved designs practically feasible.",
+        "❌ D3 is highly flexible, but can be labor intensive to use. Other resources may provide reasonable defaults for simpler needs.",
+        "❌ Since D3 is performant at scale and data-focused, it might not be the correct tool for an informal visualization, or for visualizing small data sets. It can still be used, of course, but the complexity is not amortized as it would be for a large dataset.",
+        "❌ It may be the case that building a visualization in a native application rather than the browser is better suited to the needs of one's audience, the format of one's data or, though less likely, even in response to DOM-related performance bottlenecks for sufficiently large datasets. In this case, D3 would be out of the running.",
+        ["[3. & 4.] Accessibility Evaluation", { fontWeight: "bold" }],
+        "The first article discusses the prevalence of screen readers among visually impaired users."
     ]
 }
 let _heights = {
@@ -45,10 +49,12 @@ let _heights = {
     container: `${MAX_HEIGHT}px`
 }
 
-function toggleInfo(contentsId) {
+function toggleInfo(contentsId, toggleId) {
     const contents = document.getElementById(contentsId)
+    const toggle = document.getElementById(toggleId)
 
     if (contents.classList.contains("info_active")) {
+        toggle.src = "icons/info.png"
         contents.classList.remove("info_active")
 
         contents.innerHTML = ""
@@ -57,6 +63,7 @@ function toggleInfo(contentsId) {
             contents.append(child)
         }
     } else {
+        toggle.src = "icons/clear.png"
         contents.classList.add("info_active")
         _contents[contentsId] = [...contents.children]
 
@@ -72,7 +79,15 @@ function toggleInfo(contentsId) {
         _text[contentsId].forEach(p => {
             const span = document.createElement("span")
             span.style.marginBottom = "10px"
-            span.textContent = p
+            if (Array.isArray(p)) {
+                const [text, style] = p
+                span.textContent = text
+                for (const key of Object.keys(style)) {
+                    span.style[key] = style[key]
+                }
+            } else {
+                span.textContent = p
+            }
             div.append(span)
         })
 
