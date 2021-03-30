@@ -11,7 +11,7 @@ document.addEventListener("keypress", e => {
 let _contents = {}
 let _text = {
     graph1_wrapper: [
-        "This interactive donut graph allows exploration and comparison of the number of titles within each set of mutually exclusive genres (either among movies or television shows). Hover over a slice to view its genre name and title count.",
+        "This interactive donut graph allows exploration and comparison of the number of titles within the two mutually exclusive sets of genres (either among movies or television shows). Hover over a slice to view its genre name and title count.",
         "To explore a specific subset of genres, select (1 < number < total_visible) genres by clicking on either the slice or the list element and press 'Apply' to view just those genres in a smaller subgraph. In a subgraph, genre slices' colors are not reinterpolated: rather, original global colors are transferred to preserve global scale information. The smallest subgraph may contain two genres, but no fewer. With this setup, one can either view global relationships among all genres, or focus in on comparing particular genres of interest. This is particularly helpful when comparing genres with small global slices.",
         "'Back' returns to the previous selection. 'Clear' resets all state. Switching between movies and television shows resets all state."
     ],
@@ -25,7 +25,7 @@ let _text = {
         "This interactive bar graph displays pairs of directors and actors, subject to the filters and conditions, ordered by the number of movies in the data in which both have been involved.",
         "In any event, it will display up to 15 pairs to preserve readability. To view all pairs featuring a particular actor, use the filter input and autocomplete. For example, to find all directors with whom Matt Damon has worked, ordered by the number of shared films, search a:Matt Damon and select the entry from the dropdown. To find all actors that Martin Scorsese has directed, search d:Martin Scorsese. This filter can be cleared by pressing 'Escape' if the input has focus, or clicking the circular button within the input.",
         "In some cases, a single individual is both a director and an actor in a movie, resulting in a pair with the same name. These are disallowed by default, but can be displayed by checking 'Director Allowed As Actor'. Likewise, there are instances where the same movie is released in different languages. By default, these versions are collapsed and collectively contribute 1 to the shared movie counts, but they can each be treated as unique movies by checking 'Language Versions Unique'.",
-        "The title will indicate whether all relevant pairs are being shown. If there are more than can be displayed, the total is included. For both the title and axes, if a filter is applied, the name will appear in the appropriate slot, either 'Actor' or 'Director'.",
+        "The title will indicate whether all relevant pairs are being shown. If there are more than can be displayed, the total is included. For both the title and axes, if a filter is applied, the name will appear in the appropriate slot, replacing either 'Actor' or 'Director'.",
         "With this setup, you can explore relationships between directors and actors, and expand your search by observing and then filtering names that appear in association with previous queries."
     ],
     container: [
