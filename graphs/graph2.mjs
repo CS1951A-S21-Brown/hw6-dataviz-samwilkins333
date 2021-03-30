@@ -2,7 +2,7 @@ let cleaned_data = undefined
 let ordering = undefined
 let range = undefined
 
-const width = (MAX_WIDTH / 2),
+const width = (MAX_WIDTH / 2) - 10,
     height = MAX_HEIGHT - BUTTON_HEIGHT,
     duration = 500
 
@@ -72,11 +72,11 @@ const title = svg.append("text")
     .attr("font-weight", "bold")
     .style("font-size", 15);
 
-render_graph2 = async args => {
+render_graph2 = async (args) => {
     const transition = document.getElementById('transition').checked
     ordering = args.ordering || ordering
 
-    const full_data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv("../data/netflix.csv")))
+    const full_data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv(DATA_PATH)))
 
     if (args.init) {
         range = undefined

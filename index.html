@@ -30,26 +30,38 @@
         <div class="wrapper _col cent blurrable" style="border-bottom: 1px dashed black;">
             <div class="wrapper _row"
                  style="display: flex;align-items: flex-end;padding: 10px 0 10px 0;border-bottom: 1px solid #00000011">
-                <div class="_row" style="display: flex;width: 100%;">
-                    <button id="movie" style="margin-left: 10px" type="button" class="btn btn-info"
+                <div class="_row" style="display: flex;width: 100%;align-items: center;justify-content: space-between">
+                    <div style="display: flex;align-items: center;">
+                        <img
+                            id="graph1_info"
+                            class="info"
+                            src="icons/info.png"
+                            alt="More Information"
+                            title="More Information"
+                            onclick="toggleInfo('graph1_wrapper')"
+                        >
+                        <button id="movie" style="margin-left: 10px" type="button" class="btn btn-info"
                             onclick="render_graph1({ category: 'Movie' })">Movies
-                    </button>
-                    <button id="show" style="margin-left: 10px" type="button" class="btn btn-info"
-                            onclick="render_graph1({ category: 'TV Show' })">TV Shows
-                    </button>
-                    <div id="title1" class="wrapper _row cent"></div>
-                    <button id="back-pie" style="margin-right: 10px" class="btn"
+                        </button>
+                        <button id="show" style="margin-left: 10px" type="button" class="btn btn-info"
+                                onclick="render_graph1({ category: 'TV Show' })">TV Shows
+                        </button>
+                    </div>
+                    <div style="display: flex">
+                        <button id="back-pie" style="margin-right: 10px;margin-left: 10px;" class="btn"
                             onclick="render_graph1({ focus_action: 'back' })">Back
-                    </button>
-                    <button id="select-pie" style="margin-right: 10px" class="btn" onclick="render_graph1({})">Select
-                    </button>
-                    <button id="clear-pie" style="margin-right: 10px" class="btn"
-                            onclick="render_graph1({ focus_action: 'clear' })">Clear
-                    </button>
+                        </button>
+                        <button id="select-pie" style="margin-right: 10px" class="btn" onclick="render_graph1({})">Apply
+                        </button>
+                        <button id="clear-pie" style="margin-right: 10px" class="btn"
+                                onclick="render_graph1({ focus_action: 'clear' })">Clear
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="wrapper _row cent">
-                <div id="pie-data" class="wrapper _row">
+            <div id="graph1_wrapper" class="wrapper _row cent">
+                <div id="pie-data" class="wrapper _col">
+                    <div id="title1" class="wrapper _row cent"></div>
                     <div id="labels-list" class="wrapper _col"></div>
                 </div>
                 <div id="graph1" style="display: flex" class="cent"></div>
@@ -58,7 +70,15 @@
         <div class="wrapper _col cent blurrable">
             <div class="wrapper cent"
                  style="align-items: flex-end;padding: 10px 0 10px 0;border-bottom: 1px solid #00000011">
-                <div class="_row" style="display: flex;width: 100%;">
+                <div class="_row" style="display: flex;width: 100%;align-items: center;">
+                    <img
+                            id="graph3_info"
+                            class="info"
+                            src="icons/info.png"
+                            alt="More Information"
+                            title="More Information"
+                            onclick="toggleInfo('graph3_wrapper')"
+                    >
                     <div class="autoComplete_wrapper">
                         <input
                                 id="filter"
@@ -88,13 +108,23 @@
                     </div>
                 </div>
             </div>
-            <div id="graph3" class="wrapper _col cent"></div>
+            <div id="graph3_wrapper" class="wrapper">
+                <div id="graph3" class="wrapper _col cent"></div>
+            </div>
         </div>
     </div>
     <div class="wrapper _col cent blurrable" style="border-left: 1px dashed black">
         <div class="wrapper cent"
              style="align-items: flex-end;padding: 10px 0 10px 0;border-bottom: 1px solid #00000011">
             <div class="wrapper _row" style="align-items: center">
+                <img
+                        id="graph2_info"
+                        class="info"
+                        src="icons/info.png"
+                        alt="More Information"
+                        title="More Information"
+                        onclick="toggleInfo('graph2_wrapper')"
+                >
                 <button
                         id="release_year"
                         style="margin-left: 10px"
@@ -124,12 +154,15 @@
                 </div>
             </div>
         </div>
-        <div id="graph2" class="wrapper cent"></div>
-        <div id="slider"></div>
+        <div id="graph2_wrapper" class="wrapper">
+            <div id="graph2" class="wrapper cent"></div>
+            <div id="slider"></div>
+        </div>
     </div>
 </div>
 <script type="text/javascript">
-    let render_graph1, render_graph2, render_graph3, clear_filter, focused, tooltip
+    let focused, tooltip, render_graph1, render_graph2, render_graph3, clear_filter
+    const DATA_PATH = "../data/netflix.csv"
     const MAX_WIDTH = Math.max(1080, window.innerWidth) - 1;
     const MAX_HEIGHT = Math.max(720, window.innerHeight) - 67;
     const BUTTON_HEIGHT = 55

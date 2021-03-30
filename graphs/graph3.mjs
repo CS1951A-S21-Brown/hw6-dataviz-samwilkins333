@@ -99,7 +99,7 @@ render_graph3 = async (override) => {
         all_directors,
         all_actors,
         pairs
-    } = (cleaned_data = cleaned_data ?? clean_data(await d3.csv("../data/netflix.csv")))
+    } = (cleaned_data = cleaned_data ?? clean_data(await d3.csv(DATA_PATH)))
     let data = pairs[langVersionsUnique ? 1 : 0]
 
     if (!allowSelfPairs) {

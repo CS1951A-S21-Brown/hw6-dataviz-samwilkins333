@@ -117,7 +117,7 @@ render_graph1 = async ({category, focus_action}) => {
 
     _category = category ?? _category
 
-    let data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv("../data/netflix.csv")))[_category]
+    let data = (cleaned_data = cleaned_data ?? clean_data(await d3.csv(DATA_PATH)))[_category]
 
     if (focus_action) {
         switch (focus_action) {

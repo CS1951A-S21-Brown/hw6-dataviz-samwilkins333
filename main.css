@@ -83,7 +83,7 @@ body, #container {
 
 #labels-list {
     border-left: 1px solid #00000022;
-    padding: 7px 8px 7px 4px;
+    padding: 7px 5px 7px 5px;
     overflow-y: scroll;
 }
 
@@ -158,3 +158,18 @@ label {
 .check {
     margin: 0 !important;
 }
+
+.info {
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+._collapsed {
+    visibility: hidden !important;
+}
+
+/*div::-webkit-scrollbar {*/
+/*  display: none;*/
+/*}*/
