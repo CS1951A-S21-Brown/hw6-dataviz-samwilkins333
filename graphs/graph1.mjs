@@ -229,8 +229,8 @@ render_graph1 = async ({category, focus_action}) => {
                 .style("opacity", .9)
             tooltip
                 .html(`${genre} [${count}]`)
-                .style("left", `${offset_x + x + height / 2}px`)
-                .style("top", `${offset_y + y + height / 2}px`);
+                .style("left", `${offset_x + x + (height + mar) / 2}px`)
+                .style("top", `${offset_y + y + height / 2 + 10}px`);
             focus(genre, color(genre))
         })
         .on("mouseout", () => {
