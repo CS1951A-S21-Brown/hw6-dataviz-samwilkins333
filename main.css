@@ -84,7 +84,7 @@ body, #container {
 #labels-list {
     border-left: 1px solid #00000022;
     padding: 7px 5px 7px 5px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .item {
